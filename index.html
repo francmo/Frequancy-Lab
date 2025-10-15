@@ -2357,8 +2357,8 @@
             harmonicsGain.connect(spectrogramAnalyser);
             spectrogramAnalyser.connect(masterGain);
 
-            // Start spectrogram with 5000 Hz range
-            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 5000);
+            // Start spectrogram with 500 Hz range
+            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 500);
         }
 
         function stopHarmonics() {
