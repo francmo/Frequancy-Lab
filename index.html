@@ -1689,8 +1689,8 @@
             freqAnalyser.connect(masterGain);
             freqOscillator.start();
 
-            // Start spectrogram animation
-            drawSpectrogram();
+            // Start spectrogram animation with 2000 Hz range
+            drawRealTimeSpectrogramCustomRange('freqSpectrogram', freqAnalyser, 2000);
         }
 
         function stopFrequency() {
