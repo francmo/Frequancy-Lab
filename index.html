@@ -1702,6 +1702,7 @@
                 cancelAnimationFrame(freqAnimationId);
                 freqAnimationId = null;
             }
+            stopSpectrogram();
             freqAnalyser = null;
         }
 
@@ -2305,11 +2306,13 @@
                 document.getElementById('harmFreqValue').textContent = freq.toFixed(0);
                 drawHarmonicsSpectrum();
 
-                // Update in real-time if playing
+                // Update in real-time if playing, otherwise start playing
                 if (harmonicsOscillators.length > 0) {
                     harmonicsOscillators.forEach((osc, i) => {
                         osc.frequency.value = freq * (i + 1);
                     });
+                } else {
+                    playHarmonics();
                 }
             });
 
@@ -2318,10 +2321,8 @@
                 document.getElementById('harmCountValue').textContent = count;
                 drawHarmonicsSpectrum();
 
-                // Restart if playing to apply new harmonic count
-                if (harmonicsOscillators.length > 0) {
-                    playHarmonics();
-                }
+                // Always restart to apply new harmonic count
+                playHarmonics();
             });
 
             drawHarmonicsSpectrum();
