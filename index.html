@@ -2373,8 +2373,8 @@
             harmonicsGainNode.connect(spectrogramAnalyser);
             spectrogramAnalyser.connect(masterGain);
 
-            // Start spectrogram with 3500 Hz range (perfect for 8 harmonics of 440 Hz)
-            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 3500);
+            // Start spectrogram with 500 Hz range (zoomed view for low harmonics)
+            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 500);
         }
 
         function stopHarmonics() {
