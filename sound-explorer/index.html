@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sound Explorer - Gioco Educativo di Acustica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 1200px;
+            height: 700px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #stationPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 800px;
+            max-height: 600px;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow-y: auto;
+        }
+
+        #stationPanel.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .panel-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 {
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .panel-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .control-group {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .value-display {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 10px 5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-close {
+            background: #e74c3c;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-close:hover {
+            background: #c0392b;
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .wave-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 3px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wave-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .wave-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 50;
+        }
+
+        .spectrum-canvas {
+            width: 100%;
+            height: 250px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .adsr-visual {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2196f3;
+            margin: 15px 0;
+            color: #1565c0;
+        }
+
+        .filter-response {
+            width: 100%;
+            height: 180px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        #quizPanel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 700px;
+            max-height: 550px;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.4);
+            z-index: 150;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow-y: auto;
+        }
+
+        #quizPanel.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .quiz-question {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .quiz-question h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .quiz-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #4caf50;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f44336;
+            background: #f44336;
+            color: white;
+        }
+
+        .quiz-result {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .quiz-result.good {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .quiz-result.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .quiz-result.bad {
+            background: #ffccbc;
+            color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="quizPanel">
+            <div id="quizContent"></div>
+        </div>
+
+        <div id="stationPanel">
+            <div class="panel-header">
+                <h2 id="stationTitle">Stazione</h2>
+                <p id="stationDescription">Descrizione</p>
+            </div>
+            <div id="stationContent"></div>
+            <button class="btn btn-close" onclick="closeStation()">🚪 Esci dalla Stazione</button>
+        </div>
+
+        <div id="instructions">
+            ⬆️⬇️⬅️➡️ Usa le frecce per muoverti | 🎵 Avvicinati alle stazioni per esplorare
+        </div>
+    </div>
+
+    <script>
+        // ========== GAME SETUP ==========
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1200;
+        canvas.height = 700;
+
+        // Audio Context
+        let audioContext = null;
+        let masterGain = null;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioContext.createGain();
+                masterGain.connect(audioContext.destination);
+                masterGain.gain.value = 0.3;
+            }
+        }
+
+        // ========== PLAYER ==========
+        const player = {
+            x: 100,
+            y: 500,
+            width: 40,
+            height: 60,
+            speed: 4,
+            color: '#FF6B6B',
+            direction: 'right',
+            walking: false,
+            walkFrame: 0
+        };
+
+        const keys = {};
+
+        // ========== STATIONS ==========
+        const stations = [
+            {
+                id: 'frequency',
+                name: '🎼 Frequenza',
+                x: 200,
+                y: 200,
+                width: 100,
+                height: 100,
+                color: '#FF6B6B',
+                description: 'Esplora l\'altezza del suono e le frequenze',
+                icon: '🎼'
+            },
+            {
+                id: 'amplitude',
+                name: '🔊 Ampiezza',
+                x: 500,
+                y: 200,
+                width: 100,
+                height: 100,
+                color: '#4ECDC4',
+                description: 'Scopri l\'intensità e il volume del suono',
+                icon: '🔊'
+            },
+            {
+                id: 'timbre',
+                name: '🎨 Timbro',
+                x: 800,
+                y: 200,
+                width: 100,
+                height: 100,
+                color: '#95E1D3',
+                description: 'Analizza le diverse forme d\'onda',
+                icon: '🎨'
+            },
+            {
+                id: 'adsr',
+                name: '📈 Inviluppo ADSR',
+                x: 200,
+                y: 450,
+                width: 100,
+                height: 100,
+                color: '#F38181',
+                description: 'Modella l\'evoluzione del suono nel tempo',
+                icon: '📈'
+            },
+            {
+                id: 'harmonics',
+                name: '🌈 Armoniche',
+                x: 500,
+                y: 450,
+                width: 100,
+                height: 100,
+                color: '#AA96DA',
+                description: 'Scopri lo spettro armonico e gli overtones',
+                icon: '🌈'
+            },
+            {
+                id: 'beats',
+                name: '〰️ Battimenti',
+                x: 800,
+                y: 450,
+                width: 100,
+                height: 100,
+                color: '#FCBAD3',
+                description: 'Esplora l\'interferenza tra frequenze',
+                icon: '〰️'
+            },
+            {
+                id: 'filters',
+                name: '🎛️ Filtri',
+                x: 1050,
+                y: 320,
+                width: 100,
+                height: 100,
+                color: '#FFFFD2',
+                description: 'Manipola il suono con filtri e risonanza',
+                icon: '🎛️'
+            },
+            {
+                id: 'environments',
+                name: '🏛️ Ambienti',
+                x: 600,
+                y: 50,
+                width: 100,
+                height: 100,
+                color: '#FFB6C1',
+                description: 'Esplora riverbero, eco e assorbimento in ambienti diversi',
+                icon: '🏛️'
+            }
+        ];
+
+        let currentStation = null;
+        let nearStation = null;
+
+        // ========== QUIZ SYSTEM ==========
+        const quizQuestions = {
+            frequency: [
+                {
+                    question: "Cosa determina l'altezza (acutezza) di un suono?",
+                    options: ["L'ampiezza", "La frequenza", "Il timbro", "Il volume"],
+                    correct: 1
+                },
+                {
+                    question: "La frequenza del La centrale (A4) è:",
+                    options: ["220 Hz", "330 Hz", "440 Hz", "880 Hz"],
+                    correct: 2
+                },
+                {
+                    question: "Se raddoppio la frequenza di un suono, l'altezza:",
+                    options: ["Rimane uguale", "Sale di un'ottava", "Scende di un'ottava", "Diventa il doppio più forte"],
+                    correct: 1
+                },
+                {
+                    question: "L'unità di misura della frequenza è:",
+                    options: ["Decibel (dB)", "Hertz (Hz)", "Watt (W)", "Note musicali"],
+                    correct: 1
+                },
+                {
+                    question: "Un suono con frequenza più alta è percepito come:",
+                    options: ["Più forte", "Più debole", "Più acuto", "Più grave"],
+                    correct: 2
+                }
+            ],
+            amplitude: [
+                {
+                    question: "L'ampiezza di un'onda sonora determina:",
+                    options: ["L'altezza del suono", "Il volume del suono", "Il timbro", "La velocità del suono"],
+                    correct: 1
+                },
+                {
+                    question: "L'unità di misura dell'intensità sonora è:",
+                    options: ["Hertz (Hz)", "Metro (m)", "Decibel (dB)", "Ampere (A)"],
+                    correct: 2
+                },
+                {
+                    question: "Una riduzione di 6 dB corrisponde a:",
+                    options: ["Metà dell'ampiezza", "Un quarto dell'ampiezza", "Il doppio dell'ampiezza", "Nessun cambiamento"],
+                    correct: 0
+                },
+                {
+                    question: "Un'ampiezza pari a zero produce:",
+                    options: ["Un suono molto acuto", "Un suono molto grave", "Silenzio", "Rumore bianco"],
+                    correct: 2
+                },
+                {
+                    question: "Maggiore è l'ampiezza, più il suono è:",
+                    options: ["Acuto", "Grave", "Forte", "Rapido"],
+                    correct: 2
+                }
+            ],
+            timbre: [
+                {
+                    question: "Il timbro di un suono dipende principalmente da:",
+                    options: ["La frequenza fondamentale", "L'ampiezza", "La forma d'onda e il contenuto armonico", "La velocità del suono"],
+                    correct: 2
+                },
+                {
+                    question: "Quale forma d'onda contiene solo la frequenza fondamentale?",
+                    options: ["Quadra", "Sinusoidale", "Triangolare", "Dente di sega"],
+                    correct: 1
+                },
+                {
+                    question: "L'onda quadra contiene:",
+                    options: ["Solo armoniche pari", "Solo armoniche dispari", "Tutte le armoniche", "Nessuna armonica"],
+                    correct: 1
+                },
+                {
+                    question: "Strumenti diversi suonano diversamente alla stessa nota grazie a:",
+                    options: ["Volume diverso", "Timbro diverso", "Frequenza diversa", "Velocità diversa"],
+                    correct: 1
+                },
+                {
+                    question: "Il dente di sega contiene:",
+                    options: ["Solo la fondamentale", "Solo armoniche dispari", "Tutte le armoniche", "Nessuna armonica"],
+                    correct: 2
+                }
+            ],
+            adsr: [
+                {
+                    question: "ADSR sta per:",
+                    options: ["Attack, Decay, Sustain, Release", "Amplitude, Duration, Sound, Reverb", "Audio, Digital, Synthesis, Recording", "Attack, Distortion, Sustain, Reverb"],
+                    correct: 0
+                },
+                {
+                    question: "La fase di Attack rappresenta:",
+                    options: ["Il tempo per tornare a zero", "Il tempo per raggiungere il volume massimo", "Il livello mantenuto", "Il decadimento del suono"],
+                    correct: 1
+                },
+                {
+                    question: "Sustain è:",
+                    options: ["Un tempo in secondi", "Un livello di volume mantenuto", "La velocità di rilascio", "La frequenza del suono"],
+                    correct: 1
+                },
+                {
+                    question: "Release controlla:",
+                    options: ["Quanto velocemente il suono inizia", "Quanto forte è il suono", "Quanto tempo impiega il suono a svanire", "L'altezza del suono"],
+                    correct: 2
+                },
+                {
+                    question: "Un pianoforte ha tipicamente:",
+                    options: ["Attack lento e Release lento", "Attack veloce e Release variabile", "Attack lento e Release veloce", "Nessun Attack"],
+                    correct: 1
+                }
+            ],
+            harmonics: [
+                {
+                    question: "Le armoniche sono frequenze:",
+                    options: ["Multiple della fondamentale", "Casuali", "Inferiori alla fondamentale", "Indipendenti dalla fondamentale"],
+                    correct: 0
+                },
+                {
+                    question: "Se la fondamentale è 100 Hz, la terza armonica è:",
+                    options: ["150 Hz", "200 Hz", "300 Hz", "400 Hz"],
+                    correct: 2
+                },
+                {
+                    question: "Le armoniche determinano principalmente:",
+                    options: ["Il volume", "L'altezza", "Il timbro", "La durata"],
+                    correct: 2
+                },
+                {
+                    question: "Gli overtones sono:",
+                    options: ["Sinonimo di armoniche", "Frequenze sub-armoniche", "Solo per strumenti a corda", "Errori di accordatura"],
+                    correct: 0
+                },
+                {
+                    question: "L'ampiezza delle armoniche tipicamente:",
+                    options: ["Aumenta con il numero dell'armonica", "Rimane costante", "Diminuisce con il numero dell'armonica", "È sempre zero"],
+                    correct: 2
+                }
+            ],
+            beats: [
+                {
+                    question: "I battimenti si creano quando:",
+                    options: ["Due frequenze identiche suonano insieme", "Due frequenze vicine suonano insieme", "Un suono è molto forte", "Un suono è molto acuto"],
+                    correct: 1
+                },
+                {
+                    question: "La frequenza del battimento è:",
+                    options: ["La somma delle due frequenze", "La differenza tra le due frequenze", "La media delle due frequenze", "Il prodotto delle due frequenze"],
+                    correct: 1
+                },
+                {
+                    question: "Se suono 440 Hz e 445 Hz insieme, il battimento sarà:",
+                    options: ["2.5 Hz", "5 Hz", "10 Hz", "885 Hz"],
+                    correct: 1
+                },
+                {
+                    question: "I battimenti sono usati per:",
+                    options: ["Amplificare il suono", "Accordare strumenti", "Creare effetti di riverbero", "Registrare audio"],
+                    correct: 1
+                },
+                {
+                    question: "Quando due note sono perfettamente accordate:",
+                    options: ["I battimenti sono massimi", "I battimenti scompaiono", "Si crea distorsione", "Il volume raddoppia"],
+                    correct: 1
+                }
+            ],
+            filters: [
+                {
+                    question: "Un filtro passa-basso lascia passare:",
+                    options: ["Solo le alte frequenze", "Solo le basse frequenze", "Tutte le frequenze", "Nessuna frequenza"],
+                    correct: 1
+                },
+                {
+                    question: "La frequenza di taglio (cutoff) è:",
+                    options: ["Il volume massimo", "Il punto dove il filtro inizia ad attenuare", "La frequenza più alta udibile", "Il numero di armoniche"],
+                    correct: 1
+                },
+                {
+                    question: "Il parametro Q (risonanza) controlla:",
+                    options: ["Il volume generale", "La pendenza e il picco del filtro", "La frequenza del suono", "La durata del suono"],
+                    correct: 1
+                },
+                {
+                    question: "Un filtro passa-alto:",
+                    options: ["Attenua le basse frequenze", "Attenua le alte frequenze", "Aumenta tutte le frequenze", "Non modifica il suono"],
+                    correct: 0
+                },
+                {
+                    question: "Il filtro passa-banda lascia passare:",
+                    options: ["Solo le frequenze molto alte", "Solo le frequenze molto basse", "Le frequenze intorno al cutoff", "Tutte le frequenze"],
+                    correct: 2
+                }
+            ],
+            environments: [
+                {
+                    question: "Il riverbero è causato da:",
+                    options: ["Riflessioni del suono sulle superfici", "Frequenze molto alte", "Volume molto basso", "Forme d'onda complesse"],
+                    correct: 0
+                },
+                {
+                    question: "RT60 rappresenta:",
+                    options: ["Il volume del riverbero", "Il tempo affinché il riverbero decada di 60 dB", "La frequenza del riverbero", "Il numero di riflessioni"],
+                    correct: 1
+                },
+                {
+                    question: "Il pre-delay è:",
+                    options: ["Il tempo totale del riverbero", "Il tempo tra suono diretto e prime riflessioni", "La velocità del suono", "L'altezza del soffitto"],
+                    correct: 1
+                },
+                {
+                    question: "Un ambiente piccolo e trattato acusticamente avrà:",
+                    options: ["Riverbero lunghissimo", "Riverbero molto breve", "Nessun suono", "Solo eco"],
+                    correct: 1
+                },
+                {
+                    question: "Il damping in un riverbero simula:",
+                    options: ["L'eco", "L'assorbimento delle alte frequenze", "Il volume", "La distorsione"],
+                    correct: 1
+                }
+            ]
+        };
+
+        let quizAnswers = [];
+        let quizStationId = null;
+
+        // ========== QUIZ FUNCTIONS ==========
+        function showQuiz(stationId) {
+            quizStationId = stationId;
+            quizAnswers = [];
+
+            const questions = quizQuestions[stationId];
+            if (!questions) return;
+
+            let html = `
+                <h2 style="text-align: center; color: #2E7D32; margin-bottom: 30px;">
+                    📝 Quiz: ${getStationName(stationId)}
+                </h2>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                    Rispondi alle seguenti domande per consolidare quello che hai imparato!
+                </p>
+            `;
+
+            questions.forEach((q, qIndex) => {
+                html += `
+                    <div class="quiz-question" data-question="${qIndex}">
+                        <h3>${qIndex + 1}. ${q.question}</h3>
+                        <div class="quiz-options">
+                            ${q.options.map((option, oIndex) => `
+                                <button class="quiz-option"
+                                        data-question="${qIndex}"
+                                        data-answer="${oIndex}"
+                                        onclick="selectQuizAnswer(${qIndex}, ${oIndex})">
+                                    ${option}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="submitQuiz()"
+                            style="padding: 15px 40px; font-size: 18px;">
+                        ✓ Invia Risposte
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('quizContent').innerHTML = html;
+            document.getElementById('quizPanel').classList.add('active');
+        }
+
+        function getStationName(stationId) {
+            const names = {
+                frequency: 'Frequenza',
+                amplitude: 'Ampiezza',
+                timbre: 'Timbro',
+                adsr: 'Inviluppo ADSR',
+                harmonics: 'Armoniche',
+                beats: 'Battimenti',
+                filters: 'Filtri',
+                environments: 'Ambienti'
+            };
+            return names[stationId] || stationId;
+        }
+
+        function selectQuizAnswer(questionIndex, answerIndex) {
+            quizAnswers[questionIndex] = answerIndex;
+
+            // Update UI - remove previous selection
+            const questionDiv = document.querySelector(`.quiz-question[data-question="${questionIndex}"]`);
+            const options = questionDiv.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selection to clicked option
+            const selectedOption = questionDiv.querySelector(
+                `.quiz-option[data-question="${questionIndex}"][data-answer="${answerIndex}"]`
+            );
+            selectedOption.classList.add('selected');
+        }
+
+        function submitQuiz() {
+            const questions = quizQuestions[quizStationId];
+
+            // Check if all questions are answered
+            if (quizAnswers.length < questions.length) {
+                alert('⚠️ Per favore rispondi a tutte le domande prima di inviare!');
+                return;
+            }
+
+            // Calculate score
+            let correctCount = 0;
+            questions.forEach((q, index) => {
+                const questionDiv = document.querySelector(`.quiz-question[data-question="${index}"]`);
+                const options = questionDiv.querySelectorAll('.quiz-option');
+
+                if (quizAnswers[index] === q.correct) {
+                    correctCount++;
+                    // Mark correct answer
+                    options[quizAnswers[index]].classList.add('correct');
+                } else {
+                    // Mark incorrect answer and show correct one
+                    options[quizAnswers[index]].classList.add('incorrect');
+                    options[q.correct].classList.add('correct');
+                }
+
+                // Disable all options
+                options.forEach(opt => opt.disabled = true);
+            });
+
+            const percentage = (correctCount / questions.length) * 100;
+
+            // Show result
+            let resultClass = 'good';
+            let resultEmoji = '🎉';
+            let resultMessage = 'Eccellente!';
+
+            if (percentage < 60) {
+                resultClass = 'bad';
+                resultEmoji = '📚';
+                resultMessage = 'Continua a studiare!';
+            } else if (percentage < 80) {
+                resultClass = 'medium';
+                resultEmoji = '👍';
+                resultMessage = 'Buon lavoro!';
+            }
+
+            const resultHtml = `
+                <div class="quiz-result ${resultClass}" style="text-align: center; margin-top: 30px; padding: 20px; border-radius: 15px;">
+                    <h2>${resultEmoji} ${resultMessage}</h2>
+                    <p style="font-size: 24px; margin: 20px 0;">
+                        Hai risposto correttamente a <strong>${correctCount}</strong> su <strong>${questions.length}</strong> domande
+                    </p>
+                    <p style="font-size: 20px; color: #666;">
+                        Punteggio: <strong>${percentage.toFixed(0)}%</strong>
+                    </p>
+                    <button class="btn btn-primary" onclick="closeQuiz()"
+                            style="margin-top: 20px; padding: 15px 40px; font-size: 18px;">
+                        🚀 Continua l'Esplorazione
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('quizContent').insertAdjacentHTML('beforeend', resultHtml);
+
+            // Scroll to result
+            document.getElementById('quizPanel').scrollTop = document.getElementById('quizPanel').scrollHeight;
+        }
+
+        function closeQuiz() {
+            document.getElementById('quizPanel').classList.remove('active');
+            quizAnswers = [];
+            quizStationId = null;
+
+            // Now actually close the station
+            actuallyCloseStation();
+        }
+
+        // ========== INPUT HANDLING ==========
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+            if (e.key === 'Enter' && nearStation && !currentStation) {
+                openStation(nearStation);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // ========== GAME LOOP ==========
+        function update() {
+            if (!currentStation) {
+                // Move player
+                player.walking = false;
+
+                if (keys['ArrowLeft'] || keys['a']) {
+                    player.x -= player.speed;
+                    player.direction = 'left';
+                    player.walking = true;
+                }
+                if (keys['ArrowRight'] || keys['d']) {
+                    player.x += player.speed;
+                    player.direction = 'right';
+                    player.walking = true;
+                }
+                if (keys['ArrowUp'] || keys['w']) {
+                    player.y -= player.speed;
+                    player.walking = true;
+                }
+                if (keys['ArrowDown'] || keys['s']) {
+                    player.y += player.speed;
+                    player.walking = true;
+                }
+
+                // Boundaries
+                player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+                player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+
+                // Walking animation
+                if (player.walking) {
+                    player.walkFrame += 0.2;
+                }
+
+                // Check station proximity
+                nearStation = null;
+                for (let station of stations) {
+                    const dist = Math.hypot(
+                        player.x + player.width/2 - (station.x + station.width/2),
+                        player.y + player.height/2 - (station.y + station.height/2)
+                    );
+                    if (dist < 100) {
+                        nearStation = station;
+                        if (keys['Enter'] || keys[' ']) {
+                            openStation(station);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        function draw() {
+            // Background
+            ctx.fillStyle = '#E8F5E9';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid
+            ctx.strokeStyle = '#C8E6C9';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < canvas.width; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+
+            // Draw stations
+            for (let station of stations) {
+                // Station glow if near
+                if (nearStation === station) {
+                    ctx.shadowBlur = 30;
+                    ctx.shadowColor = station.color;
+                }
+
+                // Station base
+                ctx.fillStyle = station.color;
+                roundRect(ctx, station.x, station.y, station.width, station.height, 20);
+                ctx.fill();
+
+                // Station icon
+                ctx.shadowBlur = 0;
+                ctx.font = '48px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(station.icon, station.x + station.width/2, station.y + station.height/2);
+
+                // Station name
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = '#333';
+                ctx.fillText(station.name, station.x + station.width/2, station.y + station.height + 25);
+
+                // Interaction hint
+                if (nearStation === station) {
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillStyle = '#4CAF50';
+                    ctx.fillText('↩ ENTRA', station.x + station.width/2, station.y - 20);
+                }
+            }
+
+            // Draw player
+            drawPlayer();
+
+            ctx.shadowBlur = 0;
+        }
+
+        function drawPlayer() {
+            const bounce = player.walking ? Math.sin(player.walkFrame) * 3 : 0;
+            const px = player.x + player.width/2;
+            const py = player.y + player.height/2 + bounce;
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath();
+            ctx.ellipse(px, player.y + player.height, player.width/3, 8, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.ellipse(px, py - 10, 18, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Head
+            ctx.fillStyle = '#FFD93D';
+            ctx.beginPath();
+            ctx.arc(px, py - 35, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = '#333';
+            const eyeOffset = player.direction === 'left' ? -3 : 3;
+            ctx.beginPath();
+            ctx.arc(px - 5 + eyeOffset, py - 37, 3, 0, Math.PI * 2);
+            ctx.arc(px + 5 + eyeOffset, py - 37, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Smile
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(px, py - 32, 8, 0.2, Math.PI - 0.2);
+            ctx.stroke();
+
+            // Arms
+            const armSwing = player.walking ? Math.sin(player.walkFrame) * 0.3 : 0;
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(px - 15, py - 5);
+            ctx.lineTo(px - 20, py + 5 + armSwing * 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(px + 15, py - 5);
+            ctx.lineTo(px + 20, py + 5 - armSwing * 10);
+            ctx.stroke();
+
+            // Legs
+            const legSwing = player.walking ? Math.sin(player.walkFrame) * 10 : 0;
+            ctx.beginPath();
+            ctx.moveTo(px - 5, py + 10);
+            ctx.lineTo(px - 8, py + 25 + legSwing);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(px + 5, py + 10);
+            ctx.lineTo(px + 8, py + 25 - legSwing);
+            ctx.stroke();
+        }
+
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ========== STATION INTERACTIONS ==========
+        function openStation(station) {
+            initAudio();
+            currentStation = station;
+            document.getElementById('stationTitle').textContent = station.name;
+            document.getElementById('stationDescription').textContent = station.description;
+
+            const content = document.getElementById('stationContent');
+            content.innerHTML = '';
+
+            // Load station-specific content
+            switch(station.id) {
+                case 'frequency':
+                    loadFrequencyStation(content);
+                    break;
+                case 'amplitude':
+                    loadAmplitudeStation(content);
+                    break;
+                case 'timbre':
+                    loadTimbreStation(content);
+                    break;
+                case 'adsr':
+                    loadADSRStation(content);
+                    break;
+                case 'harmonics':
+                    loadHarmonicsStation(content);
+                    break;
+                case 'beats':
+                    loadBeatsStation(content);
+                    break;
+                case 'filters':
+                    loadFiltersStation(content);
+                    break;
+                case 'environments':
+                    loadEnvironmentsStation(content);
+                    break;
+            }
+
+            document.getElementById('stationPanel').classList.add('active');
+        }
+
+        function closeStation() {
+            // First, show the quiz for this station
+            if (currentStation) {
+                showQuiz(currentStation.id);
+            }
+        }
+
+        function actuallyCloseStation() {
+            // Stop all audio
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+                masterGain = null;
+            }
+
+            currentStation = null;
+            document.getElementById('stationPanel').classList.remove('active');
+        }
+
+        // ========== FREQUENCY STATION ==========
+        let freqOscillator = null;
+        let freqAnalyser = null;
+        let freqAnimationId = null;
+
+        function loadFrequencyStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Frequenza:</strong> Determina l'altezza del suono. Più è alta la frequenza (Hz), più acuto è il suono. Il La centrale (A4) è 440 Hz.
+                </div>
+
+                <div class="control-group">
+                    <label>🎵 Frequenza: <span id="freqValue">440</span> Hz (<span id="freqNote">A4</span>)</label>
+                    <input type="range" id="freqSlider" min="20" max="2000" value="440" step="1">
+                </div>
+
+                <canvas class="waveform-canvas" id="freqWaveform"></canvas>
+
+                <canvas class="spectrum-canvas" id="freqSpectrogram" style="height: 300px"></canvas>
+
+                <div class="info-box">
+                    📊 <strong>Spettrogramma:</strong> Visualizzazione in tempo reale dello spettro di frequenze. L'asse verticale rappresenta la frequenza, i colori l'intensità.
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playFrequency()">▶️ Riproduci</button>
+                    <button class="btn btn-primary" onclick="stopFrequency()">⏹️ Stop</button>
+                </div>
+            `;
+
+            const slider = document.getElementById('freqSlider');
+            const valueDisplay = document.getElementById('freqValue');
+            const noteDisplay = document.getElementById('freqNote');
+
+            slider.addEventListener('input', (e) => {
+                const freq = parseFloat(e.target.value);
+                valueDisplay.textContent = freq.toFixed(1);
+                noteDisplay.textContent = frequencyToNote(freq);
+                drawFrequencyWaveform(freq);
+                if (freqOscillator) {
+                    freqOscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                }
+            });
+
+            drawFrequencyWaveform(440);
+        }
+
+        function playFrequency() {
+            if (freqOscillator) return;
+
+            const freq = parseFloat(document.getElementById('freqSlider').value);
+
+            // Create analyser
+            freqAnalyser = audioContext.createAnalyser();
+            freqAnalyser.fftSize = 2048;
+            freqAnalyser.smoothingTimeConstant = 0.8;
+
+            freqOscillator = audioContext.createOscillator();
+            freqOscillator.type = 'sine';
+            freqOscillator.frequency.value = freq;
+            freqOscillator.connect(freqAnalyser);
+            freqAnalyser.connect(masterGain);
+            freqOscillator.start();
+
+            // Start spectrogram animation
+            drawSpectrogram();
+        }
+
+        function stopFrequency() {
+            if (freqOscillator) {
+                freqOscillator.stop();
+                freqOscillator = null;
+            }
+            if (freqAnimationId) {
+                cancelAnimationFrame(freqAnimationId);
+                freqAnimationId = null;
+            }
+            freqAnalyser = null;
+        }
+
+        function drawSpectrogram() {
+            if (!freqAnalyser) return;
+
+            const canvas = document.getElementById('freqSpectrogram');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (canvas.width !== canvas.offsetWidth) {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+
+            const bufferLength = freqAnalyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            freqAnalyser.getByteFrequencyData(dataArray);
+
+            // Scroll the canvas left
+            const imageData = ctx.getImageData(1, 0, canvas.width - 1, canvas.height);
+            ctx.putImageData(imageData, 0, 0);
+
+            // Draw new column
+            const sliceWidth = 1;
+            const x = canvas.width - sliceWidth;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const value = dataArray[i];
+                const percent = value / 255;
+                const y = canvas.height - (i / bufferLength) * canvas.height;
+                const height = Math.max(1, canvas.height / bufferLength);
+
+                // Color based on intensity (blue -> green -> yellow -> red)
+                let r, g, b;
+                if (percent < 0.25) {
+                    r = 0;
+                    g = Math.floor(percent * 4 * 255);
+                    b = 255;
+                } else if (percent < 0.5) {
+                    r = 0;
+                    g = 255;
+                    b = Math.floor((0.5 - percent) * 4 * 255);
+                } else if (percent < 0.75) {
+                    r = Math.floor((percent - 0.5) * 4 * 255);
+                    g = 255;
+                    b = 0;
+                } else {
+                    r = 255;
+                    g = Math.floor((1 - percent) * 4 * 255);
+                    b = 0;
+                }
+
+                ctx.fillStyle = `rgb(${r},${g},${b})`;
+                ctx.fillRect(x, y - height, sliceWidth, height);
+            }
+
+            // Frequency labels
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('0 Hz', 5, canvas.height - 5);
+            ctx.fillText(`${(audioContext.sampleRate / 2).toFixed(0)} Hz`, 5, 15);
+
+            freqAnimationId = requestAnimationFrame(drawSpectrogram);
+        }
+
+        function drawFrequencyWaveform(freq) {
+            const canvas = document.getElementById('freqWaveform');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            const wavelength = canvas.width / (freq / 100);
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height/2 + Math.sin((x / wavelength) * Math.PI * 2) * (canvas.height/2 - 20);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`${freq} Hz`, 10, 20);
+        }
+
+        function frequencyToNote(freq) {
+            const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const A4 = 440;
+            const C0 = A4 * Math.pow(2, -4.75);
+            const halfSteps = Math.round(12 * Math.log2(freq / C0));
+            const octave = Math.floor(halfSteps / 12);
+            const note = noteNames[halfSteps % 12];
+            return `${note}${octave}`;
+        }
+
+        // ========== AMPLITUDE STATION ==========
+        let ampOscillator = null;
+        let ampGain = null;
+
+        function loadAmplitudeStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Ampiezza:</strong> Rappresenta l'intensità del suono. Maggiore è l'ampiezza, più forte è il volume percepito. Si misura in decibel (dB).
+                </div>
+
+                <div class="control-group">
+                    <label>🔊 Volume: <span id="ampValue">50</span>% | <span id="ampDb">-6</span> dB</label>
+                    <input type="range" id="ampSlider" min="0" max="100" value="50" step="1">
+                </div>
+
+                <canvas class="waveform-canvas" id="ampWaveform"></canvas>
+
+                <div class="info-box">
+                    📊 <strong>Scala dB:</strong> Ogni -6dB corrisponde a metà dell'ampiezza. 0dB = volume massimo, -∞dB = silenzio.
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playAmplitude()">▶️ Riproduci</button>
+                    <button class="btn btn-primary" onclick="stopAmplitude()">⏹️ Stop</button>
+                </div>
+            `;
+
+            const slider = document.getElementById('ampSlider');
+            slider.addEventListener('input', (e) => {
+                const vol = parseFloat(e.target.value);
+                document.getElementById('ampValue').textContent = vol.toFixed(0);
+                const db = vol === 0 ? -Infinity : 20 * Math.log10(vol / 100);
+                document.getElementById('ampDb').textContent = db === -Infinity ? '-∞' : db.toFixed(1);
+                drawAmplitudeWaveform(vol / 100);
+                if (ampGain) {
+                    ampGain.gain.setValueAtTime(vol / 100, audioContext.currentTime);
+                }
+            });
+
+            drawAmplitudeWaveform(0.5);
+        }
+
+        function playAmplitude() {
+            if (ampOscillator) return;
+
+            ampOscillator = audioContext.createOscillator();
+            ampOscillator.type = 'sine';
+            ampOscillator.frequency.value = 440;
+
+            ampGain = audioContext.createGain();
+            const vol = parseFloat(document.getElementById('ampSlider').value) / 100;
+            ampGain.gain.value = vol;
+
+            ampOscillator.connect(ampGain);
+            ampGain.connect(masterGain);
+            ampOscillator.start();
+        }
+
+        function stopAmplitude() {
+            if (ampOscillator) {
+                ampOscillator.stop();
+                ampOscillator = null;
+                ampGain = null;
+            }
+        }
+
+        function drawAmplitudeWaveform(amplitude) {
+            const canvas = document.getElementById('ampWaveform');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#4ECDC4';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            const wavelength = 100;
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height/2 + Math.sin((x / wavelength) * Math.PI * 2) * (canvas.height/2 - 20) * amplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Amplitude markers
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height/2 - (canvas.height/2 - 20) * amplitude);
+            ctx.lineTo(canvas.width, canvas.height/2 - (canvas.height/2 - 20) * amplitude);
+            ctx.moveTo(0, canvas.height/2 + (canvas.height/2 - 20) * amplitude);
+            ctx.lineTo(canvas.width, canvas.height/2 + (canvas.height/2 - 20) * amplitude);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // ========== TIMBRE STATION ==========
+        let timbreOscillators = [];
+        let timbreGains = [];
+        let waveAmplitudes = {sine: 1, square: 0, triangle: 0, sawtooth: 0};
+
+        function loadTimbreStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Timbro:</strong> La "qualità" o "colore" del suono. Dipende dalla forma d'onda e dal contenuto armonico. Strumenti diversi suonano diversamente anche alla stessa frequenza grazie al timbro.
+                </div>
+
+                <div class="control-group">
+                    <label>🌊 Sinusoidale: <span id="sineAmp">100</span>%</label>
+                    <input type="range" id="sineSlider" min="0" max="100" value="100" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>⬜ Quadra: <span id="squareAmp">0</span>%</label>
+                    <input type="range" id="squareSlider" min="0" max="100" value="0" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>🔺 Triangolare: <span id="triangleAmp">0</span>%</label>
+                    <input type="range" id="triangleSlider" min="0" max="100" value="0" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>🪚 Dente di sega: <span id="sawtoothAmp">0</span>%</label>
+                    <input type="range" id="sawtoothSlider" min="0" max="100" value="0" step="1">
+                </div>
+
+                <canvas class="waveform-canvas" id="timbreWaveform"></canvas>
+
+                <canvas class="spectrum-canvas" id="timbreSpectrum"></canvas>
+
+                <div class="info-box">
+                    📚 <strong>Sperimenta:</strong> Mescola diverse forme d'onda per creare timbri unici! Ogni forma d'onda ha un contenuto armonico diverso visibile nello spettro.
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playTimbre()">▶️ Riproduci Mix</button>
+                    <button class="btn btn-primary" onclick="stopTimbre()">⏹️ Stop</button>
+                </div>
+            `;
+
+            ['sine', 'square', 'triangle', 'sawtooth'].forEach(type => {
+                const slider = document.getElementById(`${type}Slider`);
+                slider.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value) / 100;
+                    waveAmplitudes[type] = val;
+                    document.getElementById(`${type}Amp`).textContent = Math.round(val * 100);
+                    drawTimbreMix();
+                    if (timbreOscillators.length > 0) {
+                        const index = ['sine', 'square', 'triangle', 'sawtooth'].indexOf(type);
+                        if (timbreGains[index]) {
+                            timbreGains[index].gain.setValueAtTime(val, audioContext.currentTime);
+                        }
+                    }
+                });
+            });
+
+            drawTimbreMix();
+        }
+
+        function playTimbre() {
+            stopTimbre();
+
+            const types = ['sine', 'square', 'triangle', 'sawtooth'];
+            types.forEach(type => {
+                const amp = waveAmplitudes[type];
+                if (amp > 0) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+
+                    osc.type = type;
+                    osc.frequency.value = 440;
+                    gain.gain.value = amp;
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start();
+
+                    timbreOscillators.push(osc);
+                    timbreGains.push(gain);
+                }
+            });
+        }
+
+        function stopTimbre() {
+            timbreOscillators.forEach(osc => osc.stop());
+            timbreOscillators = [];
+            timbreGains = [];
+        }
+
+        function drawTimbreMix() {
+            // Draw waveform
+            const waveCanvas = document.getElementById('timbreWaveform');
+            if (!waveCanvas) return;
+            const waveCtx = waveCanvas.getContext('2d');
+            waveCanvas.width = waveCanvas.offsetWidth;
+            waveCanvas.height = waveCanvas.offsetHeight;
+
+            waveCtx.fillStyle = '#f0f0f0';
+            waveCtx.fillRect(0, 0, waveCanvas.width, waveCanvas.height);
+
+            const wavelength = 150;
+            const amplitude = waveCanvas.height/2 - 20;
+
+            // Draw combined waveform
+            waveCtx.strokeStyle = '#95E1D3';
+            waveCtx.lineWidth = 3;
+            waveCtx.beginPath();
+
+            for (let x = 0; x < waveCanvas.width; x++) {
+                const phase = (x / wavelength) * Math.PI * 2;
+                let y = 0;
+
+                // Sine
+                y += Math.sin(phase) * waveAmplitudes.sine;
+
+                // Square
+                y += Math.sign(Math.sin(phase)) * waveAmplitudes.square;
+
+                // Triangle
+                y += Math.asin(Math.sin(phase)) * (2 / Math.PI) * waveAmplitudes.triangle;
+
+                // Sawtooth
+                y += (2 * (phase / (2 * Math.PI) - Math.floor(phase / (2 * Math.PI) + 0.5))) * waveAmplitudes.sawtooth;
+
+                // Normalize
+                const total = Object.values(waveAmplitudes).reduce((a, b) => a + b, 0);
+                if (total > 0) y /= total;
+
+                y = waveCanvas.height/2 + y * amplitude;
+                if (x === 0) waveCtx.moveTo(x, y);
+                else waveCtx.lineTo(x, y);
+            }
+            waveCtx.stroke();
+
+            // Draw spectrum
+            const specCanvas = document.getElementById('timbreSpectrum');
+            if (!specCanvas) return;
+            const specCtx = specCanvas.getContext('2d');
+            specCanvas.width = specCanvas.offsetWidth;
+            specCanvas.height = specCanvas.offsetHeight;
+
+            specCtx.fillStyle = '#f0f0f0';
+            specCtx.fillRect(0, 0, specCanvas.width, specCanvas.height);
+
+            // Calculate harmonics for each wave type
+            const maxHarmonics = 16;
+            const harmonics = new Array(maxHarmonics).fill(0);
+
+            // Sine: only fundamental
+            harmonics[0] += waveAmplitudes.sine;
+
+            // Square: odd harmonics
+            for (let i = 1; i <= maxHarmonics; i += 2) {
+                harmonics[i - 1] += (waveAmplitudes.square / i);
+            }
+
+            // Triangle: odd harmonics with faster decay
+            for (let i = 1; i <= maxHarmonics; i += 2) {
+                harmonics[i - 1] += (waveAmplitudes.triangle / (i * i));
+            }
+
+            // Sawtooth: all harmonics
+            for (let i = 1; i <= maxHarmonics; i++) {
+                harmonics[i - 1] += (waveAmplitudes.sawtooth / i);
+            }
+
+            // Draw spectrum bars
+            const barWidth = (specCanvas.width - 40) / maxHarmonics;
+            const maxAmp = Math.max(...harmonics, 0.1);
+
+            for (let i = 0; i < maxHarmonics; i++) {
+                const amp = harmonics[i] / maxAmp;
+                const barHeight = amp * (specCanvas.height - 60);
+                const x = 20 + i * barWidth;
+                const y = specCanvas.height - 20 - barHeight;
+
+                const gradient = specCtx.createLinearGradient(0, y, 0, specCanvas.height - 20);
+                gradient.addColorStop(0, '#95E1D3');
+                gradient.addColorStop(1, '#667eea');
+
+                specCtx.fillStyle = gradient;
+                specCtx.fillRect(x + 2, y, barWidth - 4, barHeight);
+
+                // Frequency labels for first few harmonics
+                if (i < 8) {
+                    specCtx.fillStyle = '#333';
+                    specCtx.font = '10px Arial';
+                    specCtx.textAlign = 'center';
+                    specCtx.fillText(`${(i + 1) * 440}Hz`, x + barWidth/2, specCanvas.height - 5);
+                }
+            }
+
+            // Title
+            specCtx.fillStyle = '#333';
+            specCtx.font = 'bold 14px Arial';
+            specCtx.textAlign = 'left';
+            specCtx.fillText('Spettro del Mix', 20, 15);
+        }
+
+        // ========== ADSR STATION ==========
+        let adsrOscillator = null;
+        let adsrGain = null;
+        let adsrValues = {attack: 0.1, decay: 0.2, sustain: 0.7, release: 0.3};
+
+        function loadADSRStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Inviluppo ADSR:</strong> Descrive come il volume di un suono evolve nel tempo:<br>
+                    • <strong>Attack:</strong> tempo per raggiungere il massimo<br>
+                    • <strong>Decay:</strong> tempo per scendere al sustain<br>
+                    • <strong>Sustain:</strong> livello mantenuto<br>
+                    • <strong>Release:</strong> tempo per tornare a zero
+                </div>
+
+                <canvas class="adsr-visual" id="adsrCanvas"></canvas>
+
+                <div class="control-group">
+                    <label>⚡ Attack: <span id="attackValue">0.1</span>s</label>
+                    <input type="range" id="attackSlider" min="0.01" max="2" value="0.1" step="0.01">
+                </div>
+
+                <div class="control-group">
+                    <label>📉 Decay: <span id="decayValue">0.2</span>s</label>
+                    <input type="range" id="decaySlider" min="0.01" max="2" value="0.2" step="0.01">
+                </div>
+
+                <div class="control-group">
+                    <label>🎵 Sustain: <span id="sustainValue">70</span>%</label>
+                    <input type="range" id="sustainSlider" min="0" max="100" value="70" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>🔊 Release: <span id="releaseValue">0.3</span>s</label>
+                    <input type="range" id="releaseSlider" min="0.01" max="3" value="0.3" step="0.01">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playADSR()" onmouseup="stopADSR()">🎹 Premi e Tieni (Simula nota)</button>
+                </div>
+            `;
+
+            ['attack', 'decay', 'sustain', 'release'].forEach(param => {
+                const slider = document.getElementById(`${param}Slider`);
+                slider.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    if (param === 'sustain') {
+                        adsrValues[param] = val / 100;
+                        document.getElementById(`${param}Value`).textContent = val.toFixed(0);
+                    } else {
+                        adsrValues[param] = val;
+                        document.getElementById(`${param}Value`).textContent = val.toFixed(2);
+                    }
+                    drawADSREnvelope();
+                });
+            });
+
+            drawADSREnvelope();
+        }
+
+        function drawADSREnvelope() {
+            const canvas = document.getElementById('adsrCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const {attack, decay, sustain, release} = adsrValues;
+            const totalTime = attack + decay + 0.5 + release;
+            const timeScale = (canvas.width - 40) / totalTime;
+            const ampScale = canvas.height - 40;
+
+            ctx.strokeStyle = '#F38181';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+
+            // Attack
+            ctx.moveTo(20, canvas.height - 20);
+            ctx.lineTo(20 + attack * timeScale, 20);
+
+            // Decay
+            ctx.lineTo(20 + (attack + decay) * timeScale, 20 + (1 - sustain) * ampScale);
+
+            // Sustain
+            ctx.lineTo(20 + (attack + decay + 0.5) * timeScale, 20 + (1 - sustain) * ampScale);
+
+            // Release
+            ctx.lineTo(20 + (attack + decay + 0.5 + release) * timeScale, canvas.height - 20);
+
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('A', 20 + attack * timeScale / 2, canvas.height - 5);
+            ctx.fillText('D', 20 + attack * timeScale + decay * timeScale / 2, canvas.height - 5);
+            ctx.fillText('S', 20 + (attack + decay + 0.25) * timeScale, canvas.height - 5);
+            ctx.fillText('R', 20 + (attack + decay + 0.5 + release/2) * timeScale, canvas.height - 5);
+        }
+
+        function playADSR() {
+            if (adsrOscillator) return;
+
+            const now = audioContext.currentTime;
+            const {attack, decay, sustain} = adsrValues;
+
+            adsrOscillator = audioContext.createOscillator();
+            adsrOscillator.type = 'sine';
+            adsrOscillator.frequency.value = 440;
+
+            adsrGain = audioContext.createGain();
+            adsrGain.gain.value = 0;
+
+            adsrOscillator.connect(adsrGain);
+            adsrGain.connect(masterGain);
+            adsrOscillator.start();
+
+            // ADSR envelope
+            adsrGain.gain.setValueAtTime(0, now);
+            adsrGain.gain.linearRampToValueAtTime(1, now + attack);
+            adsrGain.gain.linearRampToValueAtTime(sustain, now + attack + decay);
+        }
+
+        function stopADSR() {
+            if (!adsrOscillator) return;
+
+            const now = audioContext.currentTime;
+            const {release} = adsrValues;
+
+            adsrGain.gain.cancelScheduledValues(now);
+            adsrGain.gain.setValueAtTime(adsrGain.gain.value, now);
+            adsrGain.gain.linearRampToValueAtTime(0, now + release);
+
+            setTimeout(() => {
+                if (adsrOscillator) {
+                    adsrOscillator.stop();
+                    adsrOscillator = null;
+                    adsrGain = null;
+                }
+            }, release * 1000 + 100);
+        }
+
+        // ========== HARMONICS STATION ==========
+        let harmonicsOscillators = [];
+
+        function loadHarmonicsStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Armoniche (Overtones):</strong> Frequenze multiple della fondamentale. La frequenza fondamentale è f, le armoniche sono 2f, 3f, 4f... Determinano il timbro degli strumenti.
+                </div>
+
+                <div class="control-group">
+                    <label>🎵 Fondamentale: <span id="harmFreqValue">220</span> Hz (A3)</label>
+                    <input type="range" id="harmFreqSlider" min="110" max="440" value="220" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label>🌈 Numero di Armoniche: <span id="harmCountValue">5</span></label>
+                    <input type="range" id="harmCountSlider" min="1" max="8" value="5" step="1">
+                </div>
+
+                <canvas class="spectrum-canvas" id="harmonicsSpectrum"></canvas>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playHarmonics()">▶️ Riproduci</button>
+                    <button class="btn btn-primary" onclick="stopHarmonics()">⏹️ Stop</button>
+                </div>
+            `;
+
+            document.getElementById('harmFreqSlider').addEventListener('input', (e) => {
+                const freq = parseFloat(e.target.value);
+                document.getElementById('harmFreqValue').textContent = freq.toFixed(0);
+                drawHarmonicsSpectrum();
+            });
+
+            document.getElementById('harmCountSlider').addEventListener('input', (e) => {
+                const count = parseInt(e.target.value);
+                document.getElementById('harmCountValue').textContent = count;
+                drawHarmonicsSpectrum();
+            });
+
+            drawHarmonicsSpectrum();
+        }
+
+        function playHarmonics() {
+            stopHarmonics();
+
+            const fundamental = parseFloat(document.getElementById('harmFreqSlider').value);
+            const count = parseInt(document.getElementById('harmCountSlider').value);
+
+            for (let i = 1; i <= count; i++) {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.frequency.value = fundamental * i;
+                gain.gain.value = 1 / i; // Amplitude decreases with harmonic number
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start();
+
+                harmonicsOscillators.push(osc);
+            }
+        }
+
+        function stopHarmonics() {
+            harmonicsOscillators.forEach(osc => osc.stop());
+            harmonicsOscillators = [];
+        }
+
+        function drawHarmonicsSpectrum() {
+            const canvas = document.getElementById('harmonicsSpectrum');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const fundamental = parseFloat(document.getElementById('harmFreqSlider').value);
+            const count = parseInt(document.getElementById('harmCountSlider').value);
+
+            const barWidth = (canvas.width - 40) / count;
+
+            for (let i = 1; i <= count; i++) {
+                const amplitude = 1 / i;
+                const barHeight = amplitude * (canvas.height - 60);
+                const x = 20 + (i - 1) * barWidth;
+                const y = canvas.height - 20 - barHeight;
+
+                // Gradient bar
+                const gradient = ctx.createLinearGradient(0, y, 0, canvas.height - 20);
+                gradient.addColorStop(0, '#AA96DA');
+                gradient.addColorStop(1, '#FCBAD3');
+
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x + 5, y, barWidth - 10, barHeight);
+
+                // Frequency label
+                ctx.fillStyle = '#333';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${(fundamental * i).toFixed(0)}Hz`, x + barWidth/2, canvas.height - 5);
+
+                // Harmonic number
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(`${i}`, x + barWidth/2, y - 5);
+            }
+
+            // Title
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Spettro Armonico - Fondamentale: ${fundamental}Hz`, 20, 15);
+        }
+
+        // ========== BEATS STATION ==========
+        let beat1Osc = null;
+        let beat2Osc = null;
+
+        function loadBeatsStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Battimenti:</strong> Quando due frequenze molto vicine suonano insieme, si crea un'oscillazione periodica del volume chiamata "battimento". La frequenza del battimento = |f1 - f2|.
+                </div>
+
+                <div class="control-group">
+                    <label>🎵 Frequenza 1: <span id="beat1Value">440</span> Hz</label>
+                    <input type="range" id="beat1Slider" min="400" max="480" value="440" step="0.1">
+                </div>
+
+                <div class="control-group">
+                    <label>🎶 Frequenza 2: <span id="beat2Value">445</span> Hz</label>
+                    <input type="range" id="beat2Slider" min="400" max="480" value="445" step="0.1">
+                </div>
+
+                <div class="value-display">
+                    Frequenza Battimento: <span id="beatFreq">5.0</span> Hz
+                </div>
+
+                <canvas class="waveform-canvas" id="beatsWaveform"></canvas>
+
+                <div class="info-box">
+                    🎼 <strong>Applicazione:</strong> I battimenti sono usati per accordare strumenti. Quando si accorda, si cerca di eliminare i battimenti finché le due note suonano "pulite".
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playBeats()">▶️ Riproduci</button>
+                    <button class="btn btn-primary" onclick="stopBeats()">⏹️ Stop</button>
+                </div>
+            `;
+
+            const updateBeats = () => {
+                const f1 = parseFloat(document.getElementById('beat1Slider').value);
+                const f2 = parseFloat(document.getElementById('beat2Slider').value);
+                document.getElementById('beat1Value').textContent = f1.toFixed(1);
+                document.getElementById('beat2Value').textContent = f2.toFixed(1);
+                document.getElementById('beatFreq').textContent = Math.abs(f1 - f2).toFixed(1);
+                drawBeatsWaveform(f1, f2);
+                if (beat1Osc) {
+                    beat1Osc.frequency.setValueAtTime(f1, audioContext.currentTime);
+                    beat2Osc.frequency.setValueAtTime(f2, audioContext.currentTime);
+                }
+            };
+
+            document.getElementById('beat1Slider').addEventListener('input', updateBeats);
+            document.getElementById('beat2Slider').addEventListener('input', updateBeats);
+
+            drawBeatsWaveform(440, 445);
+        }
+
+        function playBeats() {
+            if (beat1Osc) return;
+
+            const f1 = parseFloat(document.getElementById('beat1Slider').value);
+            const f2 = parseFloat(document.getElementById('beat2Slider').value);
+
+            beat1Osc = audioContext.createOscillator();
+            beat1Osc.frequency.value = f1;
+            beat1Osc.type = 'sine';
+            beat1Osc.connect(masterGain);
+            beat1Osc.start();
+
+            beat2Osc = audioContext.createOscillator();
+            beat2Osc.frequency.value = f2;
+            beat2Osc.type = 'sine';
+            beat2Osc.connect(masterGain);
+            beat2Osc.start();
+        }
+
+        function stopBeats() {
+            if (beat1Osc) {
+                beat1Osc.stop();
+                beat2Osc.stop();
+                beat1Osc = null;
+                beat2Osc = null;
+            }
+        }
+
+        function drawBeatsWaveform(f1, f2) {
+            const canvas = document.getElementById('beatsWaveform');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const beatFreq = Math.abs(f1 - f2);
+            const sampleRate = 1000;
+            const amplitude = canvas.height/2 - 20;
+
+            ctx.strokeStyle = '#FCBAD3';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let x = 0; x < canvas.width; x++) {
+                const t = x / canvas.width * 3; // 3 seconds view
+                const wave1 = Math.sin(2 * Math.PI * f1 * t);
+                const wave2 = Math.sin(2 * Math.PI * f2 * t);
+                const combined = (wave1 + wave2) / 2;
+                const y = canvas.height/2 + combined * amplitude;
+
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Beat envelope
+            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            for (let x = 0; x < canvas.width; x++) {
+                const t = x / canvas.width * 3;
+                const envelope = Math.abs(Math.cos(Math.PI * beatFreq * t));
+                const y = canvas.height/2 - envelope * amplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            ctx.beginPath();
+            for (let x = 0; x < canvas.width; x++) {
+                const t = x / canvas.width * 3;
+                const envelope = Math.abs(Math.cos(Math.PI * beatFreq * t));
+                const y = canvas.height/2 + envelope * amplitude;
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // ========== FILTERS STATION ==========
+        let filterOsc = null;
+        let filterNode = null;
+
+        function loadFiltersStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Filtri:</strong> Modificano il contenuto frequenziale del suono. I filtri sono fondamentali nei sintetizzatori e nel sound design.
+                </div>
+
+                <div class="control-group">
+                    <label>🎛️ Tipo Filtro:</label>
+                    <div class="button-group">
+                        <button class="wave-btn active" onclick="selectFilterType('lowpass')">🔽 Passa-basso</button>
+                        <button class="wave-btn" onclick="selectFilterType('highpass')">🔼 Passa-alto</button>
+                        <button class="wave-btn" onclick="selectFilterType('bandpass')">〰️ Passa-banda</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🎚️ Frequenza di Taglio: <span id="filterFreqValue">1000</span> Hz</label>
+                    <input type="range" id="filterFreqSlider" min="100" max="5000" value="1000" step="10">
+                </div>
+
+                <div class="control-group">
+                    <label>🔊 Risonanza (Q): <span id="filterQValue">1</span></label>
+                    <input type="range" id="filterQSlider" min="0.1" max="20" value="1" step="0.1">
+                </div>
+
+                <canvas class="filter-response" id="filterResponse"></canvas>
+
+                <div class="info-box">
+                    📚 <strong>Tipi di Filtro:</strong><br>
+                    • <strong>Passa-basso:</strong> Lascia passare le frequenze sotto il cutoff<br>
+                    • <strong>Passa-alto:</strong> Lascia passare le frequenze sopra il cutoff<br>
+                    • <strong>Passa-banda:</strong> Lascia passare solo le frequenze vicine al cutoff
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playFilter()">▶️ Riproduci (rumore bianco)</button>
+                    <button class="btn btn-primary" onclick="stopFilter()">⏹️ Stop</button>
+                </div>
+            `;
+
+            document.getElementById('filterFreqSlider').addEventListener('input', (e) => {
+                const freq = parseFloat(e.target.value);
+                document.getElementById('filterFreqValue').textContent = freq.toFixed(0);
+                drawFilterResponse();
+                if (filterNode) {
+                    filterNode.frequency.setValueAtTime(freq, audioContext.currentTime);
+                }
+            });
+
+            document.getElementById('filterQSlider').addEventListener('input', (e) => {
+                const q = parseFloat(e.target.value);
+                document.getElementById('filterQValue').textContent = q.toFixed(1);
+                drawFilterResponse();
+                if (filterNode) {
+                    filterNode.Q.setValueAtTime(q, audioContext.currentTime);
+                }
+            });
+
+            drawFilterResponse();
+        }
+
+        let currentFilterType = 'lowpass';
+
+        function selectFilterType(type) {
+            currentFilterType = type;
+            document.querySelectorAll('.wave-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            drawFilterResponse();
+            if (filterNode) {
+                filterNode.type = type;
+            }
+        }
+
+        function playFilter() {
+            if (filterOsc) return;
+
+            // Create white noise using buffer
+            const bufferSize = audioContext.sampleRate * 2;
+            const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            filterOsc = audioContext.createBufferSource();
+            filterOsc.buffer = noiseBuffer;
+            filterOsc.loop = true;
+
+            filterNode = audioContext.createBiquadFilter();
+            filterNode.type = currentFilterType;
+            filterNode.frequency.value = parseFloat(document.getElementById('filterFreqSlider').value);
+            filterNode.Q.value = parseFloat(document.getElementById('filterQSlider').value);
+
+            filterOsc.connect(filterNode);
+            filterNode.connect(masterGain);
+            filterOsc.start();
+        }
+
+        function stopFilter() {
+            if (filterOsc) {
+                filterOsc.stop();
+                filterOsc = null;
+                filterNode = null;
+            }
+        }
+
+        function drawFilterResponse() {
+            const canvas = document.getElementById('filterResponse');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cutoff = parseFloat(document.getElementById('filterFreqValue').textContent);
+            const q = parseFloat(document.getElementById('filterQValue').textContent);
+
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            for (let x = 0; x < canvas.width; x++) {
+                const freq = 20 + (x / canvas.width) * 4980; // 20 to 5000 Hz
+                let gain;
+
+                const ratio = freq / cutoff;
+
+                switch(currentFilterType) {
+                    case 'lowpass':
+                        gain = 1 / Math.sqrt(1 + Math.pow(ratio * q, 2));
+                        break;
+                    case 'highpass':
+                        gain = ratio * q / Math.sqrt(1 + Math.pow(ratio * q, 2));
+                        break;
+                    case 'bandpass':
+                        gain = 1 / (1 + Math.pow((ratio - 1/ratio) * q, 2));
+                        break;
+                }
+
+                const y = canvas.height - 20 - (gain * (canvas.height - 40));
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Cutoff line
+            const cutoffX = ((cutoff - 20) / 4980) * canvas.width;
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(cutoffX, 0);
+            ctx.lineTo(cutoffX, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Labels
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('20Hz', 5, canvas.height - 5);
+            ctx.textAlign = 'right';
+            ctx.fillText('5kHz', canvas.width - 5, canvas.height - 5);
+            ctx.textAlign = 'center';
+            ctx.fillText(`Cutoff: ${cutoff}Hz`, cutoffX, 15);
+        }
+
+        // ========== ENVIRONMENTS STATION ==========
+        let envOscillator = null;
+        let envConvolver = null;
+        let envDelay = null;
+        let envFilter = null;
+        let envDryGain = null;
+        let envWetGain = null;
+
+        const environments = {
+            'concert-hall': {
+                name: 'Sala Concerto',
+                icon: '🎭',
+                reverbTime: 2.5,
+                preDelay: 0.03,
+                wetDry: 0.5,
+                damping: 0.7,
+                description: 'Ambiente ampio con riverbero lungo e diffuso'
+            },
+            'cathedral': {
+                name: 'Cattedrale',
+                icon: '⛪',
+                reverbTime: 4.0,
+                preDelay: 0.05,
+                wetDry: 0.7,
+                damping: 0.5,
+                description: 'Spazio molto ampio con riverbero lunghissimo'
+            },
+            'small-room': {
+                name: 'Stanza Piccola',
+                icon: '🏠',
+                reverbTime: 0.5,
+                preDelay: 0.01,
+                wetDry: 0.3,
+                damping: 0.9,
+                description: 'Ambiente intimo con riverbero breve'
+            },
+            'studio': {
+                name: 'Studio di Registrazione',
+                icon: '🎙️',
+                reverbTime: 0.3,
+                preDelay: 0.005,
+                wetDry: 0.15,
+                damping: 0.95,
+                description: 'Ambiente trattato acusticamente, molto asciutto'
+            },
+            'bathroom': {
+                name: 'Bagno',
+                icon: '🚿',
+                reverbTime: 1.2,
+                preDelay: 0.015,
+                wetDry: 0.6,
+                damping: 0.4,
+                description: 'Superfici riflettenti con riverbero metallico'
+            },
+            'outdoor': {
+                name: 'Campo Aperto',
+                icon: '🌳',
+                reverbTime: 0.1,
+                preDelay: 0.001,
+                wetDry: 0.05,
+                damping: 1.0,
+                description: 'Nessuna riflessione, suono molto asciutto'
+            },
+            'canyon': {
+                name: 'Canyon',
+                icon: '🏔️',
+                reverbTime: 1.5,
+                preDelay: 0.2,
+                wetDry: 0.4,
+                damping: 0.6,
+                description: 'Eco distinto seguito da riverbero naturale'
+            }
+        };
+
+        let currentEnvironment = 'concert-hall';
+        let currentEnvWaveform = 'sine';
+
+        function loadEnvironmentsStation(container) {
+            container.innerHTML = `
+                <div class="info-box">
+                    💡 <strong>Ambienti Acustici:</strong> Ogni spazio ha caratteristiche acustiche uniche determinate da dimensioni, materiali e geometria. Il riverbero è il risultato di infinite riflessioni del suono sulle superfici.
+                </div>
+
+                <div class="control-group">
+                    <label>🏛️ Seleziona Ambiente:</label>
+                    <div class="button-group" id="envButtons"></div>
+                </div>
+
+                <div id="envInfo" class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <strong id="envName">🎭 Sala Concerto</strong><br>
+                    <span id="envDesc">Ambiente ampio con riverbero lungo e diffuso</span>
+                </div>
+
+                <div class="control-group">
+                    <label>🎨 Forma d'Onda:</label>
+                    <div class="button-group">
+                        <button class="wave-btn active" onclick="selectEnvWaveform('sine')">🌊 Sinusoidale</button>
+                        <button class="wave-btn" onclick="selectEnvWaveform('square')">⬜ Quadra</button>
+                        <button class="wave-btn" onclick="selectEnvWaveform('triangle')">🔺 Triangolare</button>
+                        <button class="wave-btn" onclick="selectEnvWaveform('sawtooth')">🪚 Dente di sega</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>🎵 Tono di Test: <span id="envFreqValue">440</span> Hz</label>
+                    <input type="range" id="envFreqSlider" min="100" max="1000" value="440" step="10">
+                </div>
+
+                <div class="control-group">
+                    <label>🌊 Mix Wet/Dry: <span id="envWetValue">50</span>% Riverbero</label>
+                    <input type="range" id="envWetSlider" min="0" max="100" value="50" step="1">
+                </div>
+
+                <canvas id="envVisual" style="width: 100%; height: 180px; background: #f0f0f0; border-radius: 10px; margin: 15px 0;"></canvas>
+
+                <div class="info-box">
+                    📚 <strong>Parametri Acustici:</strong><br>
+                    • <strong>Riverbero:</strong> Insieme di riflessioni che decadono nel tempo<br>
+                    • <strong>Pre-delay:</strong> Tempo tra suono diretto e prime riflessioni<br>
+                    • <strong>Damping:</strong> Assorbimento delle alte frequenze<br>
+                    • <strong>Wet/Dry:</strong> Bilanciamento tra suono riverberato e originale
+                </div>
+
+                <div class="info-box" style="background: #e8f5e9; border-left-color: #4caf50;">
+                    🎨 <strong>Forme d'Onda e Riverbero:</strong> Prova diverse forme d'onda per sentire come il riverbero influisce sul contenuto armonico. Le onde quadre e a dente di sega, ricche di armoniche, creano riverberi più complessi e metallici.
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="playEnvironment()">▶️ Riproduci</button>
+                    <button class="btn btn-primary" onclick="stopEnvironment()">⏹️ Stop</button>
+                </div>
+            `;
+
+            // Create environment buttons
+            const btnContainer = document.getElementById('envButtons');
+            for (let [key, env] of Object.entries(environments)) {
+                const btn = document.createElement('button');
+                btn.className = 'wave-btn' + (key === currentEnvironment ? ' active' : '');
+                btn.textContent = `${env.icon} ${env.name}`;
+                btn.onclick = () => selectEnvironment(key);
+                btnContainer.appendChild(btn);
+            }
+
+            // Frequency slider
+            document.getElementById('envFreqSlider').addEventListener('input', (e) => {
+                const freq = parseFloat(e.target.value);
+                document.getElementById('envFreqValue').textContent = freq.toFixed(0);
+                if (envOscillator) {
+                    envOscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                }
+            });
+
+            // Wet/Dry slider
+            document.getElementById('envWetSlider').addEventListener('input', (e) => {
+                const wet = parseFloat(e.target.value) / 100;
+                document.getElementById('envWetValue').textContent = Math.round(wet * 100);
+                if (envWetGain && envDryGain) {
+                    envWetGain.gain.setValueAtTime(wet, audioContext.currentTime);
+                    envDryGain.gain.setValueAtTime(1 - wet, audioContext.currentTime);
+                }
+            });
+
+            drawEnvironmentVisual();
+        }
+
+        function selectEnvWaveform(waveform) {
+            currentEnvWaveform = waveform;
+
+            // Update UI
+            const waveButtons = document.querySelectorAll('.control-group .button-group .wave-btn');
+            waveButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // If sound is playing, update waveform in real-time
+            if (envOscillator) {
+                envOscillator.type = waveform;
+            }
+        }
+
+        function selectEnvironment(envKey) {
+            currentEnvironment = envKey;
+            const env = environments[envKey];
+
+            // Update UI
+            document.querySelectorAll('#envButtons .wave-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('envName').textContent = `${env.icon} ${env.name}`;
+            document.getElementById('envDesc').textContent = env.description;
+
+            // Update wet/dry to match environment default
+            const wetPercent = Math.round(env.wetDry * 100);
+            document.getElementById('envWetSlider').value = wetPercent;
+            document.getElementById('envWetValue').textContent = wetPercent;
+
+            // If sound is playing, recreate with new environment
+            if (envOscillator) {
+                const freq = parseFloat(document.getElementById('envFreqSlider').value);
+                stopEnvironment();
+                setTimeout(() => playEnvironment(), 100);
+            }
+
+            drawEnvironmentVisual();
+        }
+
+        function createImpulseResponse(duration, decay, preDelay, damping) {
+            const sampleRate = audioContext.sampleRate;
+            const length = sampleRate * duration;
+            const impulse = audioContext.createBuffer(2, length, sampleRate);
+            const impulseL = impulse.getChannelData(0);
+            const impulseR = impulse.getChannelData(1);
+
+            const preDelaySamples = Math.floor(preDelay * sampleRate);
+
+            for (let i = 0; i < length; i++) {
+                if (i < preDelaySamples) {
+                    impulseL[i] = 0;
+                    impulseR[i] = 0;
+                } else {
+                    const t = (i - preDelaySamples) / sampleRate;
+                    const envelope = Math.exp(-t / decay);
+
+                    // Damping: reduce high frequencies over time
+                    const dampingFactor = 1 - (1 - damping) * (t / duration);
+
+                    // Random noise with envelope
+                    impulseL[i] = (Math.random() * 2 - 1) * envelope * dampingFactor;
+                    impulseR[i] = (Math.random() * 2 - 1) * envelope * dampingFactor;
+                }
+            }
+
+            return impulse;
+        }
+
+        function playEnvironment() {
+            if (envOscillator) return;
+
+            const env = environments[currentEnvironment];
+            const freq = parseFloat(document.getElementById('envFreqSlider').value);
+            const wetMix = parseFloat(document.getElementById('envWetSlider').value) / 100;
+
+            // Create oscillator
+            envOscillator = audioContext.createOscillator();
+            envOscillator.type = currentEnvWaveform;
+            envOscillator.frequency.value = freq;
+
+            // Create dry path
+            envDryGain = audioContext.createGain();
+            envDryGain.gain.value = 1 - wetMix;
+
+            // Create wet path with convolver
+            envConvolver = audioContext.createConvolver();
+            const impulse = createImpulseResponse(
+                env.reverbTime,
+                env.reverbTime / 3,
+                env.preDelay,
+                env.damping
+            );
+            envConvolver.buffer = impulse;
+
+            envWetGain = audioContext.createGain();
+            envWetGain.gain.value = wetMix;
+
+            // If there's significant pre-delay (canyon), add explicit delay for echo
+            if (env.preDelay > 0.1) {
+                envDelay = audioContext.createDelay(1.0);
+                envDelay.delayTime.value = env.preDelay;
+
+                const echoGain = audioContext.createGain();
+                echoGain.gain.value = 0.6;
+
+                envOscillator.connect(envDelay);
+                envDelay.connect(echoGain);
+                echoGain.connect(masterGain);
+            }
+
+            // Connect dry path
+            envOscillator.connect(envDryGain);
+            envDryGain.connect(masterGain);
+
+            // Connect wet path
+            envOscillator.connect(envConvolver);
+            envConvolver.connect(envWetGain);
+            envWetGain.connect(masterGain);
+
+            envOscillator.start();
+            animateEnvironmentVisual();
+        }
+
+        function stopEnvironment() {
+            if (envOscillator) {
+                envOscillator.stop();
+                envOscillator = null;
+                envConvolver = null;
+                envDelay = null;
+                envDryGain = null;
+                envWetGain = null;
+            }
+            drawEnvironmentVisual();
+        }
+
+        function drawEnvironmentVisual() {
+            const canvas = document.getElementById('envVisual');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const env = environments[currentEnvironment];
+
+            // Draw reverb decay envelope
+            ctx.strokeStyle = '#FF6B6B';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            const maxTime = 5; // Show 5 seconds
+            const preDelayX = (env.preDelay / maxTime) * canvas.width;
+            const totalDuration = env.reverbTime + env.preDelay;
+
+            for (let x = 0; x < canvas.width; x++) {
+                const t = (x / canvas.width) * maxTime;
+                let amplitude;
+
+                if (t < env.preDelay) {
+                    amplitude = 0;
+                } else {
+                    const relTime = t - env.preDelay;
+                    amplitude = Math.exp(-relTime / (env.reverbTime / 3));
+
+                    // Apply damping curve
+                    amplitude *= env.damping + (1 - env.damping) * Math.exp(-relTime / env.reverbTime);
+                }
+
+                const y = canvas.height - 20 - (amplitude * (canvas.height - 40));
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Draw direct sound spike
+            ctx.strokeStyle = '#4ECDC4';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(10, canvas.height - 20);
+            ctx.lineTo(10, 20);
+            ctx.stroke();
+
+            // Draw pre-delay marker if significant
+            if (env.preDelay > 0.05) {
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(preDelayX, 0);
+                ctx.lineTo(preDelayX, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#333';
+                ctx.font = '11px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Echo: ${(env.preDelay * 1000).toFixed(0)}ms`, preDelayX, 15);
+            }
+
+            // Labels
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Suono Diretto', 15, canvas.height - 30);
+            ctx.fillText('0s', 5, canvas.height - 5);
+            ctx.textAlign = 'right';
+            ctx.fillText(`${maxTime}s`, canvas.width - 5, canvas.height - 5);
+
+            // RT60 marker
+            const rt60 = env.reverbTime;
+            ctx.textAlign = 'center';
+            ctx.fillText(`RT60: ${rt60.toFixed(1)}s`, canvas.width / 2, 15);
+        }
+
+        let envAnimFrame = null;
+
+        function animateEnvironmentVisual() {
+            const canvas = document.getElementById('envVisual');
+            if (!canvas || !envOscillator) {
+                drawEnvironmentVisual();
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            const time = audioContext.currentTime % 5;
+
+            drawEnvironmentVisual();
+
+            // Draw playhead
+            const x = (time / 5) * canvas.width;
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+
+            if (envOscillator) {
+                envAnimFrame = requestAnimationFrame(animateEnvironmentVisual);
+            }
+        }
+
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
