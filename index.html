@@ -2274,6 +2274,7 @@
         // ========== HARMONICS STATION ==========
         let harmonicsOscillators = [];
         let harmonicsGainNode = null;
+        let harmonicsRestartTimeout = null;
 
         function loadHarmonicsStation(container) {
             container.innerHTML = `
@@ -2321,18 +2322,22 @@
                 document.getElementById('harmCountValue').textContent = count;
                 drawHarmonicsSpectrum();
 
-                // Always restart to apply new harmonic count
-                playHarmonics();
+                // Debounce: restart after 100ms of no changes
+                clearTimeout(harmonicsRestartTimeout);
+                harmonicsRestartTimeout = setTimeout(() => {
+                    playHarmonics();
+                }, 100);
             });
 
             drawHarmonicsSpectrum();
 
-            // Initialize audio context on first interaction
-            document.getElementById('harmFreqSlider').addEventListener('mousedown', () => {
-                initAudio();
-            });
-            document.getElementById('harmCountSlider').addEventListener('mousedown', () => {
-                initAudio();
+            // Initialize audio context on first interaction (desktop and mobile)
+            const freqSlider = document.getElementById('harmFreqSlider');
+            const countSlider = document.getElementById('harmCountSlider');
+
+            ['mousedown', 'touchstart'].forEach(event => {
+                freqSlider.addEventListener(event, () => initAudio());
+                countSlider.addEventListener(event, () => initAudio());
             });
         }
 
