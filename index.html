@@ -2326,9 +2326,18 @@
             });
 
             drawHarmonicsSpectrum();
+
+            // Initialize audio context on first interaction
+            document.getElementById('harmFreqSlider').addEventListener('mousedown', () => {
+                initAudio();
+            });
+            document.getElementById('harmCountSlider').addEventListener('mousedown', () => {
+                initAudio();
+            });
         }
 
         function playHarmonics() {
+            initAudio();
             stopHarmonics();
 
             // Create analyser for spectrogram (5000 Hz range)
@@ -2359,8 +2368,8 @@
             harmonicsGainNode.connect(spectrogramAnalyser);
             spectrogramAnalyser.connect(masterGain);
 
-            // Start spectrogram with 5000 Hz range
-            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 5000);
+            // Start spectrogram with 3500 Hz range (perfect for 8 harmonics of 440 Hz)
+            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 3500);
         }
 
         function stopHarmonics() {
