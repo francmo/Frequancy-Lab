@@ -2272,6 +2272,7 @@
 
         // ========== HARMONICS STATION ==========
         let harmonicsOscillators = [];
+        let harmonicsGainNode = null;
 
         function loadHarmonicsStation(container) {
             container.innerHTML = `
@@ -2336,8 +2337,8 @@
             const count = parseInt(document.getElementById('harmCountSlider').value);
 
             // Create a gain node to connect all oscillators to analyser
-            const harmonicsGain = audioContext.createGain();
-            harmonicsGain.gain.value = 1.0;
+            harmonicsGainNode = audioContext.createGain();
+            harmonicsGainNode.gain.value = 1.0;
 
             for (let i = 1; i <= count; i++) {
                 const osc = audioContext.createOscillator();
@@ -2347,23 +2348,28 @@
                 gain.gain.value = 1 / i; // Amplitude decreases with harmonic number
 
                 osc.connect(gain);
-                gain.connect(harmonicsGain);
+                gain.connect(harmonicsGainNode);
                 osc.start();
 
                 harmonicsOscillators.push(osc);
             }
 
             // Connect to analyser and output
-            harmonicsGain.connect(spectrogramAnalyser);
+            harmonicsGainNode.connect(spectrogramAnalyser);
             spectrogramAnalyser.connect(masterGain);
 
-            // Start spectrogram with 500 Hz range
-            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 500);
+            // Start spectrogram with 5000 Hz range
+            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 5000);
         }
 
         function stopHarmonics() {
-            harmonicsOscillators.forEach(osc => osc.stop());
+            harmonicsOscillators.forEach(osc => {
+                try {
+                    osc.stop();
+                } catch(e) {}
+            });
             harmonicsOscillators = [];
+            harmonicsGainNode = null;
             stopSpectrogram();
             spectrogramAnalyser = null;
         }
