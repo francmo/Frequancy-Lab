@@ -340,6 +340,141 @@
             background: #ffccbc;
             color: #c62828;
         }
+
+        /* ========== MOBILE CONTROLS ========== */
+        #mobileControls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+        }
+
+        .dpad {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .dpad-button {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.1s;
+        }
+
+        .dpad-button:active {
+            background: #667eea;
+            transform: scale(0.95);
+        }
+
+        .dpad-up {
+            top: 0;
+            left: 50px;
+        }
+
+        .dpad-down {
+            bottom: 0;
+            left: 50px;
+        }
+
+        .dpad-left {
+            left: 0;
+            top: 50px;
+        }
+
+        .dpad-right {
+            right: 0;
+            top: 50px;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            #gameContainer {
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            #stationPanel {
+                width: 95vw;
+                max-height: 85vh;
+                padding: 20px;
+            }
+
+            #quizPanel {
+                width: 95vw;
+                max-height: 85vh;
+                padding: 20px;
+            }
+
+            .panel-header h2 {
+                font-size: 24px;
+            }
+
+            .control-group label {
+                font-size: 16px;
+            }
+
+            #instructions {
+                display: none;
+            }
+
+            #mobileControls {
+                display: block;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 12px 24px;
+            }
+
+            .waveform-canvas,
+            .spectrum-canvas {
+                height: 150px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .panel-header h2 {
+                font-size: 20px;
+            }
+
+            .control-group {
+                padding: 15px;
+            }
+
+            .dpad {
+                width: 130px;
+                height: 130px;
+            }
+
+            .dpad-button {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .dpad-up, .dpad-down {
+                left: 42.5px;
+            }
+
+            .dpad-left, .dpad-right {
+                top: 42.5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -362,14 +497,48 @@
         <div id="instructions">
             ⬆️⬇️⬅️➡️ Usa le frecce per muoverti | 🎵 Avvicinati alle stazioni per esplorare
         </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobileControls">
+            <div class="dpad">
+                <div class="dpad-button dpad-up" data-direction="up">⬆️</div>
+                <div class="dpad-button dpad-down" data-direction="down">⬇️</div>
+                <div class="dpad-button dpad-left" data-direction="left">⬅️</div>
+                <div class="dpad-button dpad-right" data-direction="right">➡️</div>
+            </div>
+        </div>
     </div>
 
     <script>
         // ========== GAME SETUP ==========
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 1200;
-        canvas.height = 700;
+
+        // Responsive canvas sizing
+        let scaleFactor = 1;
+        function resizeCanvas() {
+            const container = document.getElementById('gameContainer');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            // Base dimensions
+            const baseWidth = 1200;
+            const baseHeight = 700;
+
+            // Calculate scale to fit container while maintaining aspect ratio
+            const scaleX = containerWidth / baseWidth;
+            const scaleY = containerHeight / baseHeight;
+            scaleFactor = Math.min(scaleX, scaleY);
+
+            // Set canvas dimensions
+            canvas.width = baseWidth;
+            canvas.height = baseHeight;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         // Audio Context
         let audioContext = null;
@@ -884,6 +1053,88 @@
 
         window.addEventListener('keyup', (e) => {
             keys[e.key] = false;
+        });
+
+        // ========== MOBILE TOUCH CONTROLS ==========
+        const dpadButtons = document.querySelectorAll('.dpad-button');
+
+        dpadButtons.forEach(button => {
+            const direction = button.dataset.direction;
+
+            // Touch start
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                switch(direction) {
+                    case 'up':
+                        keys['ArrowUp'] = true;
+                        break;
+                    case 'down':
+                        keys['ArrowDown'] = true;
+                        break;
+                    case 'left':
+                        keys['ArrowLeft'] = true;
+                        break;
+                    case 'right':
+                        keys['ArrowRight'] = true;
+                        break;
+                }
+            });
+
+            // Touch end
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                switch(direction) {
+                    case 'up':
+                        keys['ArrowUp'] = false;
+                        break;
+                    case 'down':
+                        keys['ArrowDown'] = false;
+                        break;
+                    case 'left':
+                        keys['ArrowLeft'] = false;
+                        break;
+                    case 'right':
+                        keys['ArrowRight'] = false;
+                        break;
+                }
+            });
+
+            // Also handle mouse for testing
+            button.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                switch(direction) {
+                    case 'up':
+                        keys['ArrowUp'] = true;
+                        break;
+                    case 'down':
+                        keys['ArrowDown'] = true;
+                        break;
+                    case 'left':
+                        keys['ArrowLeft'] = true;
+                        break;
+                    case 'right':
+                        keys['ArrowRight'] = true;
+                        break;
+                }
+            });
+
+            button.addEventListener('mouseup', (e) => {
+                e.preventDefault();
+                switch(direction) {
+                    case 'up':
+                        keys['ArrowUp'] = false;
+                        break;
+                    case 'down':
+                        keys['ArrowDown'] = false;
+                        break;
+                    case 'left':
+                        keys['ArrowLeft'] = false;
+                        break;
+                    case 'right':
+                        keys['ArrowRight'] = false;
+                        break;
+                }
+            });
         });
 
         // ========== GAME LOOP ==========
