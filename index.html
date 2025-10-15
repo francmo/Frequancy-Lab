@@ -1477,39 +1477,77 @@
 
             const ctx = canvas.getContext('2d');
             canvas.width = canvas.offsetWidth;
-            canvas.height = 200;
+            canvas.height = 300;
 
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
+
+            // Scroll the spectrogram horizontally over time
+            let spectrogramData = [];
 
             function draw() {
                 spectrogramAnimationId = requestAnimationFrame(draw);
                 analyser.getByteFrequencyData(dataArray);
 
-                // Draw background
-                ctx.fillStyle = '#1a1a2e';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Shift existing data to the left
+                ctx.drawImage(canvas, -2, 0);
 
-                // Draw frequency bars
-                const barWidth = canvas.width / bufferLength * 2.5;
-                let x = 0;
+                // Draw new column on the right
+                const sliceWidth = 2;
+                const x = canvas.width - sliceWidth;
 
+                // Draw each frequency bin as a pixel/rectangle
+                // We want full vertical range, so map frequencies to full height
                 for (let i = 0; i < bufferLength; i++) {
-                    const barHeight = (dataArray[i] / 255) * canvas.height;
+                    const frequency = (i / bufferLength) * (audioContext.sampleRate / 2);
 
-                    // Color gradient based on frequency
-                    const hue = (i / bufferLength) * 240; // Blue to red
-                    ctx.fillStyle = `hsl(${hue}, 100%, ${50 + dataArray[i] / 10}%)`;
+                    // Map frequency to Y position (inverted: high freq at top)
+                    const y = canvas.height - (i / bufferLength) * canvas.height;
+                    const height = canvas.height / bufferLength + 1;
 
-                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                    x += barWidth + 1;
+                    // Intensity value (0-255)
+                    const intensity = dataArray[i];
+
+                    // Color based on intensity (black to bright colors)
+                    if (intensity > 5) { // Only draw if there's signal
+                        // Use a heat map: blue (low) -> green -> yellow -> red (high)
+                        let r, g, b;
+                        if (intensity < 64) {
+                            // Dark blue to blue
+                            r = 0;
+                            g = 0;
+                            b = intensity * 4;
+                        } else if (intensity < 128) {
+                            // Blue to cyan
+                            r = 0;
+                            g = (intensity - 64) * 4;
+                            b = 255;
+                        } else if (intensity < 192) {
+                            // Cyan to yellow
+                            r = (intensity - 128) * 4;
+                            g = 255;
+                            b = 255 - (intensity - 128) * 4;
+                        } else {
+                            // Yellow to red
+                            r = 255;
+                            g = 255 - (intensity - 192) * 4;
+                            b = 0;
+                        }
+
+                        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    } else {
+                        ctx.fillStyle = '#0a0a1e'; // Dark background
+                    }
+
+                    ctx.fillRect(x, y - height, sliceWidth, height);
                 }
 
                 // Draw frequency labels
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '12px Arial';
-                ctx.fillText('0 Hz', 5, canvas.height - 5);
-                ctx.fillText(`${Math.round(audioContext.sampleRate / 2)} Hz`, canvas.width - 60, canvas.height - 5);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = 'bold 11px Arial';
+                ctx.fillText('High ↑', 5, 12);
+                ctx.fillText('Low ↓', 5, canvas.height - 5);
+                ctx.fillText('← Time', canvas.width - 60, canvas.height - 5);
             }
 
             draw();
