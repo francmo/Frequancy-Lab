@@ -1,247 +1,2176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Mental Health Coach - Choose Your Version</title>
+    <title>Frequency Lab - Quiz Musica del '900 ed Elettroacustica</title>
 
-    <meta name="description" content="App gratuita per il benessere mentale di studenti e artisti! Diario personale, Analisi AI delle opere, Esercizi creativi, Tracciamento mood.">
-    <meta property="og:title" content="🧠 Artist Mental Health Coach 🎨">
-    <meta property="og:description" content="App gratuita per il benessere mentale di studenti e artisti! 📝 Diario | 🎨 Analisi AI | 🧘 Esercizi | 📊 Mood tracking">
-    <meta property="og:image" content="https://francmo.github.io/artist-mental-health-coach-4-lang/assets/og-preview.png?v=2">
-    <meta property="og:url" content="https://francmo.github.io/artist-mental-health-coach-4-lang/">
+    <!-- Open Graph Meta Tags for Social Media Sharing -->
+    <meta property="og:title" content="Frequency Lab - Piattaforma Didattica Interattiva">
+    <meta property="og:description" content="Piattaforma didattica gamificata per l'Educazione Musicale e l'Acustica Musicale by Francesco Mariano - Gruppo Apuano Sperimentale">
     <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🧠 Artist Mental Health Coach 🎨">
-    <meta name="twitter:description" content="App gratuita per il benessere mentale di studenti e artisti!">
-    <meta name="twitter:image" content="https://francmo.github.io/artist-mental-health-coach-4-lang/assets/og-preview.png?v=2">
+    <meta property="og:url" content="https://francmo.github.io/Frequancy-Lab/">
+    <meta property="og:image" content="https://francmo.github.io/Frequancy-Lab/og-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Frequency Lab - Piattaforma Didattica Interattiva">
 
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Frequency Lab - Piattaforma Didattica Interattiva">
+    <meta name="twitter:description" content="Piattaforma didattica gamificata per l'Educazione Musicale e l'Acustica Musicale by Francesco Mariano - Gruppo Apuano Sperimentale">
+    <meta name="twitter:image" content="https://francmo.github.io/Frequancy-Lab/og-preview.png">
+
+    <!-- Standard Meta Description -->
+    <meta name="description" content="Piattaforma didattica gamificata per l'Educazione Musicale e l'Acustica Musicale by Francesco Mariano - Gruppo Apuano Sperimentale">
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
             min-height: 100vh;
-            position: relative;
-            overflow: hidden;
         }
 
-        .gradient-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            animation: pulse 15s ease-in-out infinite;
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.8; }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
-        .card {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .wave-animation {
+            animation: wave 3s ease-in-out infinite;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .halloween-card {
-            background: linear-gradient(135deg, #ff6b35 0%, #9b4dca 50%, #1a0b2e 100%);
-        }
-
-        .normal-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
+        @keyframes wave {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
 
-        .badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #ff6b35;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            animation: pulse-badge 2s ease-in-out infinite;
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        @keyframes pulse-badge {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .progress-bar {
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <div class="gradient-bg">
-        <div class="relative z-10 container mx-auto px-4 py-12">
-            <!-- Header -->
-            <div class="text-center mb-16 float">
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">
-                    🎨 Artist Mental Health Coach 🎨
-                </h1>
-                <p class="text-xl md:text-2xl text-purple-100 mb-2">
-                    Choose Your Version
-                </p>
-                <p class="text-lg text-purple-200">
-                    Select your preferred language and theme
-                </p>
-            </div>
+    <div id="root"></div>
 
-            <!-- Version Cards Grid -->
-            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-                <!-- Italian Halloween -->
-                <a href="halloween-ita/index.html"
-                   class="card halloween-card rounded-2xl p-8 text-white relative block">
-                    <div class="badge">🔥 COMPLETE</div>
-                    <div class="text-6xl mb-4 text-center">🎃👻</div>
-                    <h2 class="text-3xl font-bold mb-3 text-center">Halloween Edition</h2>
-                    <p class="text-2xl font-semibold mb-4 text-center text-orange-200">Italiano</p>
-                    <div class="space-y-2 text-purple-100">
-                        <p>✨ Effetti spettrali e atmosfera Halloween</p>
-                        <p>🦇 Pipistrelli, fantasmi e zucche animate</p>
-                        <p>🌙 10+ esercizi creativi spettrali</p>
-                        <p>📊 ~90 esercizi totali con esempi</p>
-                    </div>
-                    <div class="mt-6 text-center">
-                        <span class="inline-block bg-white bg-opacity-20 px-6 py-2 rounded-full font-semibold">
-                            Apri Versione →
-                        </span>
-                    </div>
-                </a>
+        // QUIZ DATA - 200 domande totali
+        const quizData = {
+            acustica: [
+                // LIVELLO BASE (1-20)
+                {
+                    id: 1,
+                    question: "Qual è l'unità di misura della frequenza?",
+                    options: ["Decibel", "Newton", "Hertz", "Watt"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 2,
+                    question: "Quale parametro determina se un suono è acuto o grave?",
+                    options: ["Ampiezza", "Frequenza", "Durata", "Timbro"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 3,
+                    question: "Qual è l'unità di misura dell'ampiezza sonora?",
+                    options: ["Decibel", "Hertz", "Newton", "Watt"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 4,
+                    question: "Cosa rappresenta la lunghezza d'onda?",
+                    options: ["Il tempo di propagazione", "La distanza tra due creste consecutive", "L'intensità del suono", "La velocità del suono"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 5,
+                    question: "Quale fenomeno acustico si verifica quando il suono rimbalza su una superficie?",
+                    options: ["Assorbimento", "Diffrazione", "Riflessione", "Interferenza"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 6,
+                    question: "Quale tra questi è un suono puro?",
+                    options: ["Rumore bianco", "Onda sinusoidale", "Onda quadra", "Onda triangolare"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 7,
+                    question: "Quale parametro è legato all'intensità di un suono?",
+                    options: ["Frequenza", "Ampiezza", "Timbro", "Durata"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 8,
+                    question: "Quale tra questi materiali assorbe meglio il suono?",
+                    options: ["Vetro", "Cemento", "Lana di roccia", "Metallo"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 9,
+                    question: "Qual è la velocità del suono nell'aria a 20°C?",
+                    options: ["1500 m/s", "343 m/s", "5000 m/s", "100 m/s"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 10,
+                    question: "Cosa misura un fonometro?",
+                    options: ["La temperatura", "L'intensità sonora", "La frequenza", "La velocità"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 11,
+                    question: "Quale fenomeno si verifica quando due onde sonore si sovrappongono?",
+                    options: ["Risonanza", "Interferenza", "Eco", "Riverbero"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 12,
+                    question: "Quale tra questi è un esempio di suono armonico?",
+                    options: ["Onda quadra", "Onda sinusoidale", "Rumore rosa", "Onda triangolare"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 13,
+                    question: "Quale parametro distingue il timbro di uno strumento?",
+                    options: ["Frequenza", "Ampiezza", "Composizione spettrale", "Durata"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 14,
+                    question: "Quale fenomeno acustico si verifica in una sala vuota con molte superfici dure?",
+                    options: ["Assorbimento", "Riverbero", "Diffrazione", "Risonanza"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 15,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di corde?",
+                    options: ["Tromba", "Pianoforte", "Flauto", "Tamburo"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 16,
+                    question: "Quale tra questi è un'onda longitudinale?",
+                    options: ["Onda sonora", "Onda luminosa", "Onda elettromagnetica", "Onda radio"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 17,
+                    question: "Quale fenomeno si verifica quando il suono attraversa una porta aperta?",
+                    options: ["Riflessione", "Diffrazione", "Assorbimento", "Interferenza"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 18,
+                    question: "Quale tra questi è un esempio di eco?",
+                    options: ["Suono che si ripete dopo un intervallo", "Suono che si attenua", "Suono che si amplifica", "Suono che si distorce"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 19,
+                    question: "Quale parametro si modifica quando si aumenta il volume di un altoparlante?",
+                    options: ["Frequenza", "Ampiezza", "Timbro", "Durata"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 20,
+                    question: "Quale tra questi è un esempio di suono inarmonico?",
+                    options: ["Onda sinusoidale", "Onda quadra", "Rumore bianco", "Onda triangolare"],
+                    correct: 2,
+                    level: "base"
+                },
+                // LIVELLO INTERMEDIO (21-50)
+                {
+                    id: 21,
+                    question: "Qual è la relazione tra frequenza e lunghezza d'onda?",
+                    options: ["Direttamente proporzionale", "Inversamente proporzionale", "Non correlata", "Dipende dall'ampiezza"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 22,
+                    question: "Quale fenomeno acustico si verifica in una stanza con molte tende e tappeti?",
+                    options: ["Riverbero", "Assorbimento", "Diffrazione", "Risonanza"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 23,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di una membrana?",
+                    options: ["Violino", "Tromba", "Tamburo", "Flauto"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 24,
+                    question: "Quale parametro si modifica quando si cambia la nota suonata da una chitarra?",
+                    options: ["Ampiezza", "Frequenza", "Timbro", "Durata"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 25,
+                    question: "Quale tra questi fenomeni è responsabile della formazione dei battimenti?",
+                    options: ["Interferenza tra frequenze vicine", "Riflessione", "Assorbimento", "Diffrazione"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 26,
+                    question: "Quale tra questi è un esempio di risonanza?",
+                    options: ["Bicchiere che vibra alla frequenza giusta", "Suono che si attenua", "Suono che si distorce", "Suono che si amplifica casualmente"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 27,
+                    question: "Quale tra questi parametri influenza la percezione del timbro?",
+                    options: ["Solo la frequenza", "Solo l'ampiezza", "La composizione armonica", "Solo la durata"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 28,
+                    question: "Quale tra questi materiali riflette meglio il suono?",
+                    options: ["Legno", "Vetro", "Cemento", "Lana di roccia"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 29,
+                    question: "Quale tra questi fenomeni si verifica quando il suono si propaga in acqua?",
+                    options: ["Velocità maggiore rispetto all'aria", "Velocità minore rispetto all'aria", "Frequenza più alta", "Frequenza più bassa"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 30,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di aria?",
+                    options: ["Violino", "Tromba", "Pianoforte", "Tamburo"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 31,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei microfoni a condensatore?",
+                    options: ["Vibrazione di una membrana", "Vibrazione di una corda", "Vibrazione di una colonna d'aria", "Vibrazione di una lamina metallica"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 32,
+                    question: "Quale tra questi parametri si modifica in un filtro passa-basso?",
+                    options: ["Solo le frequenze alte", "Solo le frequenze basse", "Tutte le frequenze", "Nessuna frequenza"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 33,
+                    question: "Quale tra questi fenomeni si verifica in una sala da concerto ben progettata?",
+                    options: ["Riverbero controllato", "Assorbimento totale", "Diffrazione minima", "Risonanza casuale"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 34,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di una colonna d'aria?",
+                    options: ["Violino", "Tromba", "Pianoforte", "Tamburo"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 35,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei sistemi di cancellazione attiva del rumore?",
+                    options: ["Interferenza distruttiva", "Riflessione", "Assorbimento", "Diffrazione"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 36,
+                    question: "Quale tra questi parametri si modifica in un filtro passa-alto?",
+                    options: ["Solo le frequenze basse", "Solo le frequenze alte", "Tutte le frequenze", "Nessuna frequenza"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 37,
+                    question: "Quale tra questi fenomeni si verifica quando il suono attraversa un materiale poroso?",
+                    options: ["Assorbimento", "Riflessione", "Diffrazione", "Interferenza"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 38,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di una lamina metallica?",
+                    options: ["Violino", "Triangolo", "Pianoforte", "Tamburo"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 39,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei sistemi di riverbero artificiale?",
+                    options: ["Riflessione multipla", "Assorbimento totale", "Diffrazione minima", "Risonanza casuale"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 40,
+                    question: "Quale tra questi parametri si modifica in un filtro passa-banda?",
+                    options: ["Solo le frequenze centrali", "Solo le frequenze alte", "Solo le frequenze basse", "Tutte le frequenze"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 51,
+                    question: "Che cosa indica il parametro 'timbro'?",
+                    options: ["Frequenza fondamentale", "Combinazione armonica di un suono", "Ampiezza dell'onda", "Durata del suono"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 52,
+                    question: "Un suono è definito ultrasuono quando:",
+                    options: ["La frequenza supera 20.000 Hz", "La frequenza è al di sotto di 20 Hz", "È molto intenso", "Ha solo la fondamentale"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 53,
+                    question: "Un suono è definito infrasuono quando:",
+                    options: ["La frequenza supera 20.000 Hz", "La frequenza è sotto i 20 Hz", "Ha intensità fortissima", "Presenta battimenti"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 54,
+                    question: "Qual è la gamma di frequenze udibili dall'orecchio umano?",
+                    options: ["2-20 Hz", "200-2000 Hz", "20-20000 Hz", "1000-10000 Hz"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 55,
+                    question: "Che cosa rappresenta il rumore bianco?",
+                    options: ["Suono puro", "Tutte le frequenze udibili con stessa intensità", "Basse frequenze amplificate", "Solo armoniche dispari"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 56,
+                    question: "La banda critica copre circa:",
+                    options: ["1/3 di ottava", "2 ottave", "1/8 di ottava", "3 ottave"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 57,
+                    question: "La soglia di discriminazione tra due frequenze simultanee è di circa:",
+                    options: ["1 Hz", "10 Hz", "30 Hz", "100 Hz"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 58,
+                    question: "In una propagazione sonora, le molecole dell'aria compiono:",
+                    options: ["Un movimento circolare", "Un movimento oscillatorio longitudinale", "Un movimento rotatorio", "Nessun movimento"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 59,
+                    question: "Che cos'è la risonanza acustica?",
+                    options: ["Sovrapposizione di suoni diversi", "Amplificazione di una frequenza specifica", "Riduzione di volume del suono", "Dissolvenza del suono"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 60,
+                    question: "Il tempo di riverberazione T60 rappresenta:",
+                    options: ["Il tempo per ridurre il livello sonoro di 60 dB", "Il tempo per raddoppiare il volume", "Il tempo per dimezzare la frequenza", "Il tempo di propagazione tra due punti"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                // LIVELLO AVANZATO (41-50, 61-100)
+                {
+                    id: 41,
+                    question: "Qual è la relazione tra il tempo di riverberazione T60 e il decadimento del livello di pressione sonora?",
+                    options: ["T60 corrisponde a un decadimento di 30 dB", "T60 corrisponde a un decadimento di 60 dB", "T60 corrisponde a un decadimento di 6 dB", "T60 corrisponde a un decadimento di 10 dB"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 42,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei sistemi di analisi spettrale?",
+                    options: ["Trasformata di Fourier", "Riflessione", "Assorbimento", "Diffrazione"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 43,
+                    question: "Quale tra questi parametri si modifica in un filtro notch?",
+                    options: ["Solo una frequenza specifica", "Tutte le frequenze", "Solo le frequenze alte", "Solo le frequenze basse"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 44,
+                    question: "Quale tra questi fenomeni si verifica in una sala da concerto con geometria irregolare?",
+                    options: ["Diffrazione complessa", "Riverbero controllato", "Assorbimento totale", "Risonanza casuale"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 45,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di una corda pizzicata?",
+                    options: ["Violino", "Chitarra", "Pianoforte", "Tromba"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 46,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei sistemi di equalizzazione audio?",
+                    options: ["Modifica della risposta in frequenza", "Riflessione", "Assorbimento", "Diffrazione"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 47,
+                    question: "Quale tra questi parametri si modifica in un filtro shelving?",
+                    options: ["Solo le frequenze alte o basse", "Tutte le frequenze", "Solo le frequenze centrali", "Nessuna frequenza"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 48,
+                    question: "Quale tra questi fenomeni si verifica quando il suono attraversa un materiale stratificato?",
+                    options: ["Riflessione multipla", "Assorbimento totale", "Diffrazione minima", "Risonanza casuale"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 49,
+                    question: "Quale tra questi strumenti produce suoni per vibrazione di una corda sfregata?",
+                    options: ["Violino", "Chitarra", "Pianoforte", "Tromba"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 50,
+                    question: "Quale tra questi fenomeni acustici è sfruttato nei sistemi di compressione audio?",
+                    options: ["Riduzione della gamma dinamica", "Riflessione", "Assorbimento", "Diffrazione"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 61,
+                    question: "Che cosa misura il coefficiente di assorbimento acustico 'alfa'?",
+                    options: ["La frequenza di assorbimento", "La quantità di energia assorbita da una superficie", "Il tempo di riverbero", "La pressione sonora"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 62,
+                    question: "Quale condizione determina la formazione dell'eco?",
+                    options: ["Riflessione del suono entro 10 msec", "Riflessione del suono oltre 50 msec", "Assenza di riflessioni", "Assorbimento totale"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 63,
+                    question: "Qual è il principio di funzionamento di un altoparlante dinamico?",
+                    options: ["Induzione magnetica su bobina", "Piezoelettricità", "Termoresistenza", "Pressione idraulica"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 64,
+                    question: "Che cosa misura un audiogramma?",
+                    options: ["Le frequenze udibili da una persona", "L'ampiezza dell'onda sonora", "La pressione sonora totale", "La velocità del suono"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 65,
+                    question: "La legge dell'inverso del quadrato descrive:",
+                    options: ["Il comportamento della frequenza", "La diminuzione dell'intensità sonora con la distanza", "L'assorbimento totale di energia", "L'aumento di volume col moltiplicarsi delle fonti"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 66,
+                    question: "Quale è la radice dodicesima di 2 nel temperamento equabile?",
+                    options: ["Il rapporto tra le semitonature", "Il rapporto fra le ottave", "Il rapporto fondamentale nelle armoniche", "Il rapporto tra i battimenti"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 67,
+                    question: "In un ambiente riverberante, l'intelligibilità del parlato:",
+                    options: ["Aumenta", "Resta invariata", "Diminuisce", "Dipende dall'intensità sonora"],
+                    correct: 2,
+                    level: "avanzato"
+                },
+                {
+                    id: 68,
+                    question: "Quale frequenza di campionamento è necessaria per registrare suoni udibili?",
+                    options: ["Almeno 20 Hz", "Almeno 44.100 Hz", "Almeno 100 Hz", "Almeno 2 Hz"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 69,
+                    question: "Che cos'è la psicoacustica?",
+                    options: ["La fisica dei suoni", "Lo studio della percezione dei suoni", "L'analisi della propagazione delle onde", "La produzione meccanica dei suoni"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 70,
+                    question: "In uno spettrogramma, cosa rappresenta l'asse verticale?",
+                    options: ["Tempo", "Frequenza", "Intensità", "Lunghezza d'onda"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 71,
+                    question: "Cosa provoca i battimenti?",
+                    options: ["Sovrapposizione di due suoni con frequenze leggermente diverse", "Rifrazione sonora", "Interferenza tra rumori infrasuoni", "Propagazione ellittica"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 72,
+                    question: "La radice quadrata della potenza sonora determina:",
+                    options: ["L'intensità sonora", "La pressione sonora", "La frequenza", "Il timbro"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 73,
+                    question: "Un suono complesso è composto da:",
+                    options: ["Una sola frequenza", "Più frequenze combinate", "Solo armoniche dispari", "Una frequenza e ampiezza costante"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 74,
+                    question: "Che cosa rappresenta la funzione di trasferimento acustica?",
+                    options: ["Relazione tra input e output sonori", "Frequenza fondamentale", "Ampiezza massima", "Tempo di decadimento"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 75,
+                    question: "In quale materiale il suono viaggia più velocemente?",
+                    options: ["Aria", "Acqua", "Ferro", "Vetro"],
+                    correct: 2,
+                    level: "avanzato"
+                },
+                {
+                    id: 76,
+                    question: "Quale è la principale caratteristica del rumore rosa?",
+                    options: ["Tutte le frequenze udibili con intensità decrescente", "Solo le basse frequenze", "Solo le alte frequenze", "Frequenza costante"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 77,
+                    question: "Il fenomeno della diffrazione permette di:",
+                    options: ["Riuscire a udire suoni anche dietro angoli o ostacoli", "Assorbire totalmente il suono", "Riflettere completamente il suono", "Amplificare il timbro"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 78,
+                    question: "Il dB SPL esprime:",
+                    options: ["Potenza sonora", "Pressione sonora", "Ampiezza", "Durata"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 79,
+                    question: "Che cos'è il periodo di un'onda sonora?",
+                    options: ["Il tempo impiegato per una vibrazione completa", "La distanza fra due massimi", "La frequenza", "L'ampiezza"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 80,
+                    question: "La sordità percettiva è dovuta:",
+                    options: ["All'ostruzione del canale uditivo", "Alla mancata ricezione nei recettori", "Al mancato funzionamento del nervo acustico", "All'assenza di timbro"],
+                    correct: 2,
+                    level: "avanzato"
+                },
+                {
+                    id: 81,
+                    question: "Quale fenomeno provoca la percezione del 'pitch'?",
+                    options: ["La frequenza", "L'intensità", "La durata", "Il timbro"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 82,
+                    question: "I microfoni a condensatore funzionano grazie a:",
+                    options: ["Variazione della capacità tra due piastre", "Induzione magnetica", "Piezoelettricità", "Pressione idraulica"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 83,
+                    question: "La soglia del dolore acustico si trova intorno a:",
+                    options: ["20 dB", "120 dB", "60 dB", "200 dB"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 84,
+                    question: "Il riverbero in una stanza dipende principalmente da:",
+                    options: ["Dimensioni e materiali delle superfici", "Temperatura", "Colore delle pareti", "Numero di finestre"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 85,
+                    question: "Quale principio sfrutta un filtro notch?",
+                    options: ["L'eliminazione di una frequenza specifica", "La distorsione armonica", "L'amplificazione", "La compressione"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 86,
+                    question: "Quale effetto ha uno smorzamento elevato su un sistema acustico?",
+                    options: ["Riduce la durata del suono", "Amplifica la frequenza", "Distorce il timbro", "Rende il suono più riverberante"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 87,
+                    question: "In un'onda sonora, la fase rappresenta:",
+                    options: ["La posizione temporale di una vibrazione rispetto a un riferimento", "L'ampiezza", "La frequenza", "Il timbro"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 88,
+                    question: "Che cosa indica la caratteristica 'direzionalità' di un altoparlante?",
+                    options: ["L'area di emissione efficace", "La gamma di volume", "La risposta in frequenza", "Il peso"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 89,
+                    question: "Che cosa rappresenta la curva di Fletcher-Munson?",
+                    options: ["La sensibilità dell'orecchio umano alle diverse frequenze", "Il decadimento acustico", "La propagazione del suono in acqua", "La risonanza"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 90,
+                    question: "Il fenomeno della mascheratura acustica si verifica quando:",
+                    options: ["Un suono nasconde la percezione di un altro suono", "Un suono fortissimo distorce il timbro", "Tutti i suoni diventano inudibili", "Il volume si azzera"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 91,
+                    question: "In un ambiente anecoico:",
+                    options: ["L'assorbimento del suono è totale", "Il riverbero è massimo", "La riflessione è minima", "Il suono viene amplificato"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 92,
+                    question: "Il coefficiente di riflessione acustica misura:",
+                    options: ["La quantità di suono riflesso da una superficie", "La frequenza", "La pressione sonora", "L'assorbimento"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 93,
+                    question: "La risonanza di Helmholtz si verifica in:",
+                    options: ["Cavità con apertura", "Materiali assorbenti", "Aria libera", "Condotti chiusi"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 94,
+                    question: "In una sala da concerto, il flutter-echo si manifesta come:",
+                    options: ["Ripetizione rapida di riflessioni tra superfici parallele", "Assenza di riverbero", "Amplificazione delle basse frequenze", "Distorsione delle alte frequenze"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 95,
+                    question: "Il fenomeno del 'comb filtering' è dovuto a:",
+                    options: ["Sommatoria di suoni riflessi e diretti con ritardo", "Amplificazione di armoniche", "Distorsione temporale", "Propagazione attutita"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 96,
+                    question: "In acustica, la diffrazione è più significativa per:",
+                    options: ["Suoni di bassa frequenza", "Suoni di alta frequenza", "Suoni intensi", "Rumori bianchi"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 97,
+                    question: "Quale fenomeno acustico si sfrutta nei sistemi di surround?",
+                    options: ["Distribuzione spaziale dei canali sonori", "Amplificazione multipla", "Riverberazione", "Filtro passa-basso"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 98,
+                    question: "Il 'delay' audio è:",
+                    options: ["Il ritardo tra emissione e ricezione del suono", "L'amplificazione del volume", "Il decadimento del timbro", "La distorsione"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 99,
+                    question: "Un equalizzatore grafico consente di:",
+                    options: ["Regolare l'intensità delle varie bande di frequenza", "Amplificare tutte le frequenze", "Ridurre il volume generale", "Cambiare il timbro"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 100,
+                    question: "La formula di Sabine serve a calcolare:",
+                    options: ["Il tempo di riverberazione in una stanza", "La pressione sonora", "La gamma dinamica", "Il livello di rumore ambientale"],
+                    correct: 0,
+                    level: "avanzato"
+                }
+            ],
+            novecento: [
+                // LIVELLO BASE (1-15)
+                {
+                    id: 1,
+                    question: "Chi è il compositore della celebre opera 'La sagra della primavera'?",
+                    options: ["Arnold Schoenberg", "Igor Stravinsky", "Béla Bartók", "Claude Debussy"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 2,
+                    question: "Quale sistema compositivo utilizza tutti i 12 suoni della scala cromatica?",
+                    options: ["Tonalità", "Modalità", "Dodecafonia", "Minimalismo"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 3,
+                    question: "Chi è considerato il padre della musica dodecafonica?",
+                    options: ["Arnold Schoenberg", "John Cage", "Karlheinz Stockhausen", "Pierre Boulez"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 4,
+                    question: "Quale compositore americano è famoso per il brano '4'33\"'?",
+                    options: ["Steve Reich", "Philip Glass", "John Cage", "Terry Riley"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 5,
+                    question: "Cosa significa 'musica concreta'?",
+                    options: ["Musica tonale", "Musica basata su suoni registrati", "Musica elettronica", "Musica modale"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 6,
+                    question: "Quale compositore ungherese è famoso per l'uso di ritmi irregolari e melodie folcloristiche?",
+                    options: ["György Ligeti", "Béla Bartók", "Zoltán Kodály", "Franz Liszt"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 7,
+                    question: "Quale corrente musicale è caratterizzata da ripetizioni minime di brevi frasi?",
+                    options: ["Espressionismo", "Minimalismo", "Serialismo", "Neoclassicismo"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 8,
+                    question: "Chi compose l'opera 'Wozzeck'?",
+                    options: ["Alban Berg", "Anton Webern", "Arnold Schoenberg", "Gustav Mahler"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 9,
+                    question: "Quale compositore italiano è noto per le sue opere di musica elettroacustica?",
+                    options: ["Giuseppe Verdi", "Luciano Berio", "Giacomo Puccini", "Ottorino Respighi"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 10,
+                    question: "Quale termine descrive la musica che rifiuta un centro tonale?",
+                    options: ["Tonale", "Atonale", "Modale", "Politonale"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 11,
+                    question: "Chi compose 'Musik für Saiteninstrumente, Schlagzeug und Celesta'?",
+                    options: ["Igor Stravinsky", "Béla Bartók", "Arnold Schoenberg", "Paul Hindemith"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 12,
+                    question: "Quale compositore francese è considerato pioniere della musica concreta?",
+                    options: ["Pierre Boulez", "Olivier Messiaen", "Pierre Schaeffer", "Edgard Varèse"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 13,
+                    question: "Quale opera di Stravinsky causò uno scandalo alla sua prima nel 1913?",
+                    options: ["Petrushka", "L'oiseau de feu", "La sagra della primavera", "Pulcinella"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 14,
+                    question: "Quale compositore è famoso per 'Music for 18 Musicians'?",
+                    options: ["Steve Reich", "Philip Glass", "Terry Riley", "La Monte Young"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 15,
+                    question: "Chi compose 'Pierrot Lunaire'?",
+                    options: ["Arnold Schoenberg", "Alban Berg", "Anton Webern", "Igor Stravinsky"],
+                    correct: 0,
+                    level: "base"
+                },
+                // LIVELLO INTERMEDIO (16-35)
+                {
+                    id: 16,
+                    question: "Quale compositore tedesco sviluppò la tecnica del Klangfarbenmelodie?",
+                    options: ["Arnold Schoenberg", "Paul Hindemith", "Carl Orff", "Kurt Weill"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 17,
+                    question: "Cosa significa 'serialismo integrale'?",
+                    options: ["Serie di 12 note", "Serializzazione di tutti i parametri musicali", "Serie armonica", "Serie di accordi"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 18,
+                    question: "Quale compositore italiano fondò lo Studio di Fonologia di Milano?",
+                    options: ["Luciano Berio", "Luigi Nono", "Bruno Maderna", "Tutti questi"],
+                    correct: 3,
+                    level: "intermedio"
+                },
+                {
+                    id: 19,
+                    question: "Chi compose 'Threnody to the Victims of Hiroshima'?",
+                    options: ["Krzysztof Penderecki", "Witold Lutosławski", "György Ligeti", "Iannis Xenakis"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 20,
+                    question: "Quale tecnica utilizza masse sonore invece di linee melodiche?",
+                    options: ["Puntillismo", "Texture", "Micropolifonia", "Tutte queste"],
+                    correct: 3,
+                    level: "intermedio"
+                },
+                {
+                    id: 21,
+                    question: "Chi compose 'Ionisation', brano solo per percussioni?",
+                    options: ["Edgard Varèse", "John Cage", "Karlheinz Stockhausen", "Pierre Boulez"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 22,
+                    question: "Quale compositore ungherese creò il metodo Kodály per l'educazione musicale?",
+                    options: ["Béla Bartók", "György Ligeti", "Zoltán Kodály", "Ernst von Dohnányi"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 23,
+                    question: "Quale opera di Alban Berg è basata su una serie dodecafonica?",
+                    options: ["Wozzeck", "Lulu", "Concerto per violino", "Tutte queste"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 24,
+                    question: "Quale compositore greco usò la matematica e la probabilità nelle sue composizioni?",
+                    options: ["Iannis Xenakis", "Nikos Skalkottas", "Jani Christou", "Mikis Theodorakis"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 25,
+                    question: "Quale corrente musicale è caratterizzata dall'analisi dello spettro armonico?",
+                    options: ["Serialismo", "Spettralismo", "Minimalismo", "Puntillismo"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 26,
+                    question: "Chi compose 'Le marteau sans maître'?",
+                    options: ["Pierre Boulez", "Olivier Messiaen", "Karlheinz Stockhausen", "Luigi Nono"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 27,
+                    question: "Quale compositore è famoso per l'opera 'Einstein on the Beach'?",
+                    options: ["Steve Reich", "Philip Glass", "Terry Riley", "John Adams"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 28,
+                    question: "Quale tecnica prevede l'uso del caso nella composizione?",
+                    options: ["Alea", "Serialismo", "Minimalismo", "Neoclassicismo"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 29,
+                    question: "Chi compose 'Atmosphères', famosa per i cluster sonori?",
+                    options: ["György Ligeti", "Krzysztof Penderecki", "Iannis Xenakis", "Karlheinz Stockhausen"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 30,
+                    question: "Quale compositore francese utilizzò i 'modi a trasposizione limitata'?",
+                    options: ["Claude Debussy", "Maurice Ravel", "Olivier Messiaen", "Erik Satie"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 31,
+                    question: "Chi compose 'Metastasis', ispirato all'architettura di Le Corbusier?",
+                    options: ["Iannis Xenakis", "Edgard Varèse", "Pierre Boulez", "Karlheinz Stockhausen"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 32,
+                    question: "Quale opera di John Cage utilizza la radio come strumento?",
+                    options: ["Imaginary Landscape No. 4", "4'33\"", "Sonatas and Interludes", "HPSCHD"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 33,
+                    question: "Quale compositore italiano compose 'Sinfonia' con testo di Samuel Beckett?",
+                    options: ["Luciano Berio", "Luigi Nono", "Bruno Maderna", "Salvatore Sciarrino"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 34,
+                    question: "Quale tecnica vocale estesa è usata in 'Pierrot Lunaire'?",
+                    options: ["Belcanto", "Sprechgesang", "Melisma", "Vibrato"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 35,
+                    question: "Chi compose 'Requiem Canticles', la sua ultima grande opera?",
+                    options: ["Igor Stravinsky", "Arnold Schoenberg", "Benjamin Britten", "Dmitri Shostakovich"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                // LIVELLO AVANZATO (36-50)
+                {
+                    id: 36,
+                    question: "Quale compositore sviluppò la tecnica della 'micropolifonia'?",
+                    options: ["György Ligeti", "Witold Lutosławski", "Krzysztof Penderecki", "Iannis Xenakis"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 37,
+                    question: "Quale opera di Stockhausen richiede che i musicisti suonino in quattro elicotteri?",
+                    options: ["Gruppen", "Stimmung", "Helikopter-Streichquartett", "Mantra"],
+                    correct: 2,
+                    level: "avanzato"
+                },
+                {
+                    id: 38,
+                    question: "Quale compositore utilizzò per primo la sintesi granulare?",
+                    options: ["Karlheinz Stockhausen", "Iannis Xenakis", "Pierre Schaeffer", "Curtis Roads"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 39,
+                    question: "Quale opera di Luigi Nono utilizza l'elettronica dal vivo?",
+                    options: ["Il canto sospeso", "Prometeo", "Intolleranza 1960", "La fabbrica illuminata"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 40,
+                    question: "Quale compositore fondò il centro IRCAM a Parigi?",
+                    options: ["Pierre Boulez", "Pierre Henry", "Olivier Messiaen", "Gérard Grisey"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 41,
+                    question: "Quale tecnica compositiva usa Messiaen in 'Mode de valeurs et d'intensités'?",
+                    options: ["Serialismo integrale", "Dodecafonia", "Minimalismo", "Alea"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 42,
+                    question: "Quale compositore tedesco creò l''Augenmusik' (musica per gli occhi)?",
+                    options: ["Karlheinz Stockhausen", "Dieter Schnebel", "Mauricio Kagel", "Hans Werner Henze"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 43,
+                    question: "Quale opera di Berio incorpora la Sinfonia n. 2 di Mahler?",
+                    options: ["Sequenza III", "Sinfonia", "Coro", "Laborintus II"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 44,
+                    question: "Quale compositore spettralista francese compose 'Partiels'?",
+                    options: ["Gérard Grisey", "Tristan Murail", "Hugues Dufourt", "Horatiu Radulescu"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 45,
+                    question: "Quale tecnica di Cage prevede l'inserimento di oggetti nelle corde del pianoforte?",
+                    options: ["Pianoforte temperato", "Pianoforte preparato", "Pianoforte esteso", "Pianoforte modificato"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 46,
+                    question: "Quale compositore polacco utilizzò la 'sonoristica' nei suoi lavori?",
+                    options: ["Witold Lutosławski", "Krzysztof Penderecki", "Henryk Górecki", "Tutti questi"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 47,
+                    question: "Quale opera di Nono è scritta per nastro magnetico a 4 piste?",
+                    options: ["La fabbrica illuminata", "Omaggio a Emilio Vedova", "Contrappunto dialettico", "Tutte queste"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 48,
+                    question: "Quale compositore americano sviluppò la 'process music'?",
+                    options: ["Steve Reich", "Terry Riley", "La Monte Young", "Philip Glass"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 49,
+                    question: "Quale tecnica usa Xenakis per calcolare densità e masse sonore?",
+                    options: ["Teoria delle probabilità", "Teoria dei giochi", "Teoria dei grafi", "Teoria stocastica"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 50,
+                    question: "Quale compositore italiano è noto per l'uso estremo del 'silenzio' nelle sue opere?",
+                    options: ["Salvatore Sciarrino", "Franco Donatoni", "Giacinto Scelsi", "Sylvano Bussotti"],
+                    correct: 0,
+                    level: "avanzato"
+                }
+            ],
+            curiosita: [
+                // LIVELLO BASE (1-15)
+                {
+                    id: 1,
+                    question: "Come si intitola il canone provocatorio che Mozart compose per divertire gli amici?",
+                    options: ["Leck mich im Arsch", "Kiss my hand", "Scherzando", "Amici miei"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 2,
+                    question: "Quale compositore sordo continuò a comporre capolavori?",
+                    options: ["Mozart", "Bach", "Beethoven", "Haydn"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 3,
+                    question: "Quale strumento ha il record di suono più acuto?",
+                    options: ["Flauto", "Violino", "Ottavino", "Triangolo"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 4,
+                    question: "Quale compositore scrisse oltre 600 opere musicali in soli 35 anni di vita?",
+                    options: ["Mozart", "Schubert", "Chopin", "Mendelssohn"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 5,
+                    question: "Quale strumento musicale ha più di 12.000 parti?",
+                    options: ["Pianoforte", "Organo a canne", "Arpa", "Clavicembalo"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 6,
+                    question: "Quale musicista jazz suonava la tromba con la campana rivolta verso l'alto?",
+                    options: ["Louis Armstrong", "Dizzy Gillespie", "Miles Davis", "Chet Baker"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 7,
+                    question: "Quale cantante pop ha il guinness dei primati per la nota più lunga tenuta?",
+                    options: ["Mariah Carey", "Freddie Mercury", "Morten Harket (A-ha)", "Celine Dion"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 8,
+                    question: "Quale strumento è chiamato 'il re degli strumenti'?",
+                    options: ["Pianoforte", "Violino", "Organo", "Tromba"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 9,
+                    question: "Quale banda rock detiene il record del concerto più rumoroso della storia?",
+                    options: ["The Who", "Led Zeppelin", "Deep Purple", "AC/DC"],
+                    correct: 2,
+                    level: "base"
+                },
+                {
+                    id: 10,
+                    question: "Quale compositore venne sepolto tre volte?",
+                    options: ["Haydn", "Mozart", "Beethoven", "Schubert"],
+                    correct: 0,
+                    level: "base"
+                },
+                {
+                    id: 11,
+                    question: "Quale strumento a corda non ha tasti?",
+                    options: ["Chitarra", "Violino", "Liuto", "Mandolino"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 12,
+                    question: "Quale compositore diresse un'orchestra all'età di 11 anni?",
+                    options: ["Mozart", "Mendelssohn", "Rossini", "Liszt"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 13,
+                    question: "Quale cantante lirica italiana è soprannominata 'La Divina'?",
+                    options: ["Renata Tebaldi", "Maria Callas", "Mirella Freni", "Katia Ricciarelli"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 14,
+                    question: "Quale strumento venne inventato da Adolphe Sax?",
+                    options: ["Trombone", "Sassofono", "Tuba", "Corno"],
+                    correct: 1,
+                    level: "base"
+                },
+                {
+                    id: 15,
+                    question: "Quale compositore russo scrisse il 'Volo del calabrone'?",
+                    options: ["Tchaikovsky", "Rimsky-Korsakov", "Mussorgsky", "Borodin"],
+                    correct: 1,
+                    level: "base"
+                },
+                // LIVELLO INTERMEDIO (16-35)
+                {
+                    id: 16,
+                    question: "Quale strumento a percussione è fatto con la pelle di un animale marino?",
+                    options: ["Tamburo", "Timpano", "Bongo", "Grancassa"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 17,
+                    question: "Quale compositore barocco era noto per i suoi duelli musicali?",
+                    options: ["Bach", "Handel", "Vivaldi", "Scarlatti"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 18,
+                    question: "Quale strumento ha ispirato il nome di un cocktail famoso?",
+                    options: ["Piano", "Violino", "Trombone", "Sassofono"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 19,
+                    question: "Quale compositore soffriva di sifilide che influenzò la sua musica?",
+                    options: ["Schubert", "Schumann", "Smetana", "Tutti questi"],
+                    correct: 3,
+                    level: "intermedio"
+                },
+                {
+                    id: 20,
+                    question: "Quale strumento musicale è stato usato per comunicare a distanza in Africa?",
+                    options: ["Tamburo parlante", "Flauto", "Tromba", "Arpa"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 21,
+                    question: "Quale compositore era ossessionato dal numero 13?",
+                    options: ["Wagner", "Schoenberg", "Mahler", "Brahms"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 22,
+                    question: "Quale strumento a fiato non usa l'ancia?",
+                    options: ["Clarinetto", "Oboe", "Flauto", "Fagotto"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 23,
+                    question: "Quale compositore nascose messaggi segreti nelle sue partiture?",
+                    options: ["Bach", "Schumann", "Elgar", "Tutti questi"],
+                    correct: 3,
+                    level: "intermedio"
+                },
+                {
+                    id: 24,
+                    question: "Quale strumento fu inventato da Benjamin Franklin?",
+                    options: ["Armonica a bicchieri", "Pianoforte", "Banjo", "Ukulele"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 25,
+                    question: "Quale compositore morì dopo aver composto un Requiem 'maledetto'?",
+                    options: ["Mozart", "Verdi", "Brahms", "Fauré"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 26,
+                    question: "Quale strumento è considerato il più difficile da suonare?",
+                    options: ["Violino", "Corno francese", "Oboe", "Arpa"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 27,
+                    question: "Quale chitarrista suonava con i denti e dietro la schiena?",
+                    options: ["Jimi Hendrix", "Eric Clapton", "Jimmy Page", "Slash"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 28,
+                    question: "Quale compositore scrisse musica per film muti improvvisando al pianoforte?",
+                    options: ["Erik Satie", "Camille Saint-Saëns", "Molti pianisti", "Debussy"],
+                    correct: 2,
+                    level: "intermedio"
+                },
+                {
+                    id: 29,
+                    question: "Quale strumento produce suono attraverso l'elettricità senza essere toccato?",
+                    options: ["Theremin", "Sintetizzatore", "Organo Hammond", "Moog"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 30,
+                    question: "Quale compositore era contemporaneamente un celebre pianista e direttore d'orchestra?",
+                    options: ["Liszt", "Chopin", "Rachmaninoff", "Beethoven"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 31,
+                    question: "Quale orchestra sinfonica non ha un direttore stabile?",
+                    options: ["Berliner Philharmoniker", "Orpheus Chamber Orchestra", "Vienna Philharmonic", "London Symphony"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 32,
+                    question: "Quale strumento venne usato dai Beatles in 'Norwegian Wood'?",
+                    options: ["Sitar", "Tabla", "Sarangi", "Tanpura"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 33,
+                    question: "Quale compositore scrisse un'opera per un solo esecutore e pubblico?",
+                    options: ["John Cage", "Stockhausen", "Berio", "Boulez"],
+                    correct: 0,
+                    level: "intermedio"
+                },
+                {
+                    id: 34,
+                    question: "Quale strumento a tastiera medievale era azionato da mantici giganti?",
+                    options: ["Clavicembalo", "Organo idraulico", "Virginal", "Spinetta"],
+                    correct: 1,
+                    level: "intermedio"
+                },
+                {
+                    id: 35,
+                    question: "Quale cantante rock ha un'estensione vocale di 4 ottave?",
+                    options: ["Robert Plant", "Freddie Mercury", "Axl Rose", "Tutti questi"],
+                    correct: 3,
+                    level: "intermedio"
+                },
+                // LIVELLO AVANZATO (36-50)
+                {
+                    id: 36,
+                    question: "Quale compositore usò la 'serie di Fibonacci' nelle sue composizioni?",
+                    options: ["Béla Bartók", "Olivier Messiaen", "Karlheinz Stockhausen", "Tutti questi"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 37,
+                    question: "Quale strumento antichissimo è fatto con una conchiglia marina?",
+                    options: ["Ocarina", "Conch shell", "Flauto di Pan", "Didgeridoo"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 38,
+                    question: "Quale compositore scrisse un'opera che dura 639 anni?",
+                    options: ["John Cage", "La Monte Young", "Morton Feldman", "Alvin Lucier"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 39,
+                    question: "Quale strumento a corda ha 47 corde e 7 pedali?",
+                    options: ["Arpa celtica", "Arpa da concerto", "Cetra", "Salterio"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 40,
+                    question: "Quale compositore barocco scrisse più di 1000 concerti?",
+                    options: ["Vivaldi", "Bach", "Handel", "Telemann"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 41,
+                    question: "Quale strumento produce suono tramite dischi rotanti elettrificati?",
+                    options: ["Theremin", "Ondes Martenot", "Trautonium", "Stylophone"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 42,
+                    question: "Quale compositore rinascimentale scrisse una messa basata su una canzone popolare 'L'homme armé'?",
+                    options: ["Josquin des Prez", "Palestrina", "Dufay", "Tutti questi"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 43,
+                    question: "Quale strumento usa risonatori di zucca sotto le barre di legno?",
+                    options: ["Marimba africana", "Xilofono", "Vibraphone", "Glockenspiel"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 44,
+                    question: "Quale compositore medievale era una monaca visionaria?",
+                    options: ["Hildegard von Bingen", "Kassia", "Beatriz de Dia", "Comtessa de Dia"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 45,
+                    question: "Quale strumento giapponese ha 13 corde e si suona con tre plettri?",
+                    options: ["Koto", "Shamisen", "Biwa", "Sanshin"],
+                    correct: 1,
+                    level: "avanzato"
+                },
+                {
+                    id: 46,
+                    question: "Quale compositore rinascimentale scrisse il primo madrigale con testo profano?",
+                    options: ["Cipriano de Rore", "Carlo Gesualdo", "Luca Marenzio", "Claudio Monteverdi"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 47,
+                    question: "Quale strumento indiano ha corde simpatiche che vibrano per risonanza?",
+                    options: ["Sitar", "Sarod", "Veena", "Tutti questi"],
+                    correct: 3,
+                    level: "avanzato"
+                },
+                {
+                    id: 48,
+                    question: "Quale compositore barocco francese creò le 'pièces de clavecin' con titoli poetici?",
+                    options: ["François Couperin", "Jean-Philippe Rameau", "Louis Marchand", "Jacques Champion de Chambonnières"],
+                    correct: 0,
+                    level: "avanzato"
+                },
+                {
+                    id: 49,
+                    question: "Quale strumento elettronico vintage usa oscillatori a valvole termoioniche?",
+                    options: ["Moog Modular", "ARP 2600", "Trautonium", "Buchla Music Easel"],
+                    correct: 2,
+                    level: "avanzato"
+                },
+                {
+                    id: 50,
+                    question: "Quale compositore sovietico scrisse la Sinfonia n. 7 durante l'assedio di Leningrado?",
+                    options: ["Prokofiev", "Shostakovich", "Khachaturian", "Schnittke"],
+                    correct: 1,
+                    level: "avanzato"
+                }
+            ]
+        };
 
-                <!-- English Halloween -->
-                <a href="halloween-eng/index.html"
-                   class="card halloween-card rounded-2xl p-8 text-white relative block">
-                    <div class="badge">✨ NEW</div>
-                    <div class="text-6xl mb-4 text-center">🎃👻</div>
-                    <h2 class="text-3xl font-bold mb-3 text-center">Halloween Edition</h2>
-                    <p class="text-2xl font-semibold mb-4 text-center text-orange-200">English</p>
-                    <div class="space-y-2 text-purple-100">
-                        <p>✨ Spooky effects and Halloween atmosphere</p>
-                        <p>🦇 Animated bats, ghosts and pumpkins</p>
-                        <p>🌙 10+ spooky creative exercises</p>
-                        <p>📊 ~90 total exercises with examples</p>
-                    </div>
-                    <div class="mt-6 text-center">
-                        <span class="inline-block bg-white bg-opacity-20 px-6 py-2 rounded-full font-semibold">
-                            Open Version →
-                        </span>
-                    </div>
-                </a>
+        // ICONS Components
+        const PlayIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        const BookIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
+        const LightBulbIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
+        const BrainIcon = () => <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>;
+        const CheckIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
+        const XIcon = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
 
-                <!-- Italian Normal -->
-                <a href="normal-ita/index.html"
-                   class="card normal-card rounded-2xl p-8 text-white relative block">
-                    <div class="text-6xl mb-4 text-center">🌸💜</div>
-                    <h2 class="text-3xl font-bold mb-3 text-center">Normal Edition</h2>
-                    <p class="text-2xl font-semibold mb-4 text-center text-blue-200">Italiano</p>
-                    <div class="space-y-2 text-purple-100">
-                        <p>🎨 Design pulito e professionale</p>
-                        <p>💫 Focus sul benessere mentale</p>
-                        <p>📝 Diario e tracciamento mood</p>
-                        <p>🧘 Esercizi creativi e mindfulness</p>
-                    </div>
-                    <div class="mt-6 text-center">
-                        <span class="inline-block bg-white bg-opacity-20 px-6 py-2 rounded-full font-semibold">
-                            Apri Versione →
-                        </span>
-                    </div>
-                </a>
+        // CREATIVE LAB VIEW - SPOSTATO FUORI per evitare problemi di focus
+        const CreativeLabView = ({
+            creativeProfile,
+            setCreativeProfile,
+            creativeRequest,
+            setCreativeRequest,
+            analyzeCreativeRequestData,
+            creativeAnalyzing,
+            creativeLabEntries,
+            setCurrentView
+        }) => (
+            <div className="min-h-screen p-6">
+                <div className="max-w-4xl mx-auto">
+                    <div className="bg-white rounded-2xl p-8 shadow-2xl">
+                        <h2 className="text-4xl font-bold gradient-text mb-6 text-center">🧠 Creative Lab AI</h2>
 
-                <!-- English Normal -->
-                <a href="normal-eng/index.html"
-                   class="card normal-card rounded-2xl p-8 text-white relative block">
-                    <div class="text-6xl mb-4 text-center">🌸💜</div>
-                    <h2 class="text-3xl font-bold mb-3 text-center">Normal Edition</h2>
-                    <p class="text-2xl font-semibold mb-4 text-center text-blue-200">English</p>
-                    <div class="space-y-2 text-purple-100">
-                        <p>🎨 Clean and professional design</p>
-                        <p>💫 Focus on mental wellness</p>
-                        <p>📝 Journal and mood tracking</p>
-                        <p>🧘 Creative exercises and mindfulness</p>
-                    </div>
-                    <div class="mt-6 text-center">
-                        <span class="inline-block bg-white bg-opacity-20 px-6 py-2 rounded-full font-semibold">
-                            Open Version →
-                        </span>
-                    </div>
-                </a>
+                        {!creativeProfile ? (
+                            <div className="space-y-6">
+                                <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-xl">
+                                    <h3 className="text-2xl font-bold text-purple-800 mb-2">Configura il tuo Profilo</h3>
+                                    <p className="text-purple-700">Rispondi a queste domande per ricevere consigli personalizzati su musica del '900, elettroacustica e acustica.</p>
+                                </div>
 
-            </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-gray-700 font-bold mb-2">Quanti anni hai?</label>
+                                        <input
+                                            type="number"
+                                            id="profile-age"
+                                            placeholder="Es: 22"
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                                        />
+                                    </div>
 
-            <!-- Features Section -->
-            <div class="mt-16 max-w-4xl mx-auto text-center text-white">
-                <h3 class="text-2xl font-bold mb-6">All Versions Include:</h3>
-                <div class="grid md:grid-cols-3 gap-6 text-purple-100">
-                    <div class="bg-white bg-opacity-10 p-6 rounded-xl backdrop-blur-sm">
-                        <div class="text-4xl mb-3">📊</div>
-                        <h4 class="font-bold mb-2">Mood Tracking</h4>
-                        <p class="text-sm">Track your emotional state daily</p>
-                    </div>
-                    <div class="bg-white bg-opacity-10 p-6 rounded-xl backdrop-blur-sm">
-                        <div class="text-4xl mb-3">📝</div>
-                        <h4 class="font-bold mb-2">Creative Journal</h4>
-                        <p class="text-sm">Write thoughts and reflections</p>
-                    </div>
-                    <div class="bg-white bg-opacity-10 p-6 rounded-xl backdrop-blur-sm">
-                        <div class="text-4xl mb-3">🤖</div>
-                        <h4 class="font-bold mb-2">AI Feedback</h4>
-                        <p class="text-sm">Upload artwork for AI analysis</p>
+                                    <div>
+                                        <label className="block text-gray-700 font-bold mb-2">Cosa studi o quali sono i tuoi interessi musicali?</label>
+                                        <input
+                                            type="text"
+                                            id="profile-study"
+                                            placeholder="Es: Composizione, Sound Design, Musicologia..."
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-gray-700 font-bold mb-2">A che livello?</label>
+                                        <input
+                                            type="text"
+                                            id="profile-level"
+                                            placeholder="Es: Studente, Appassionato, Professionista..."
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-gray-700 font-bold mb-2">Aree di interesse specifiche?</label>
+                                        <textarea
+                                            id="profile-interests"
+                                            placeholder="Es: Musica concreta, Sintesi FM, Spazializzazione del suono..."
+                                            className="w-full h-24 p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none resize-none"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-gray-700 font-bold mb-2">Obiettivi (opzionale)</label>
+                                        <textarea
+                                            id="profile-goals"
+                                            placeholder="Es: Approfondire la musica elettroacustica, Migliorare in acustica..."
+                                            className="w-full h-24 p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none resize-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        const age = document.getElementById('profile-age').value;
+                                        const study = document.getElementById('profile-study').value;
+                                        const level = document.getElementById('profile-level').value;
+                                        const interests = document.getElementById('profile-interests').value;
+                                        const goals = document.getElementById('profile-goals').value;
+
+                                        if (!age || !study || !level || !interests) {
+                                            alert('Per favore compila tutti i campi obbligatori');
+                                            return;
+                                        }
+
+                                        setCreativeProfile({ age, study, level, interests, goals });
+                                    }}
+                                    className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:opacity-90"
+                                >
+                                    ✅ Salva Profilo
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="bg-gray-50 p-4 rounded-xl">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-bold text-gray-800">Il tuo Profilo</h4>
+                                        <button
+                                            onClick={() => {
+                                                if (confirm('Vuoi modificare il profilo?')) {
+                                                    setCreativeProfile(null);
+                                                    localStorage.removeItem('creativeProfile_freq');
+                                                }
+                                            }}
+                                            className="text-purple-600 text-sm underline"
+                                        >
+                                            Modifica
+                                        </button>
+                                    </div>
+                                    <div className="text-sm text-gray-600 space-y-1">
+                                        <p><strong>Età:</strong> {creativeProfile.age}</p>
+                                        <p><strong>Studi/Interessi:</strong> {creativeProfile.study}</p>
+                                        <p><strong>Livello:</strong> {creativeProfile.level}</p>
+                                        <p><strong>Aree:</strong> {creativeProfile.interests}</p>
+                                        {creativeProfile.goals && <p><strong>Obiettivi:</strong> {creativeProfile.goals}</p>}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-700 font-bold mb-2">Cosa vorresti approfondire o chiedermi?</label>
+                                    <textarea
+                                        value={creativeRequest}
+                                        onChange={(e) => setCreativeRequest(e.target.value)}
+                                        placeholder="Es: Vorrei capire meglio la tecnica della sintesi granulare..."
+                                        className="w-full h-32 p-4 border-2 border-purple-300 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                                    />
+
+                                    <button
+                                        onClick={analyzeCreativeRequestData}
+                                        disabled={!creativeRequest.trim() || creativeAnalyzing}
+                                        className="mt-4 w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {creativeAnalyzing ? '⏳ Analizzando...' : '🚀 Analizza e Genera Strategie'}
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h3 className="text-2xl font-bold text-gray-800">💬 Conversazioni Precedenti</h3>
+                                    {creativeLabEntries.length === 0 ? (
+                                        <p className="text-gray-500 italic text-center py-8">Nessuna conversazione ancora. Inizia a esplorare!</p>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {creativeLabEntries.slice().reverse().map((entry, i) => (
+                                                <div key={i} className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200">
+                                                    <p className="text-sm text-purple-600 mb-3 font-semibold">
+                                                        📅 {new Date(entry.date).toLocaleDateString('it-IT')}
+                                                    </p>
+
+                                                    <div className="mb-4 bg-white p-3 rounded-lg">
+                                                        <p className="text-purple-800 font-semibold text-sm mb-1">La tua richiesta:</p>
+                                                        <p className="text-gray-700 text-sm">{entry.request}</p>
+                                                    </div>
+
+                                                    <div className="bg-white p-4 rounded-lg">
+                                                        <p className="text-purple-800 font-semibold text-sm mb-2">Risposta AI:</p>
+                                                        <div
+                                                            className="text-gray-700 text-sm prose prose-sm max-w-none"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: entry.response
+                                                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                                                    .replace(/###\s(.*?)(\n|$)/g, '<h3 class="text-lg font-bold mt-3 mb-2">$1</h3>')
+                                                                    .replace(/##\s(.*?)(\n|$)/g, '<h2 class="text-xl font-bold mt-4 mb-2">$1</h2>')
+                                                                    .replace(/\n/g, '<br />')
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={() => setCurrentView('home')}
+                            className="mt-6 w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-bold hover:bg-gray-300"
+                        >
+                            🏠 Torna Home
+                        </button>
                     </div>
                 </div>
             </div>
+        );
 
-            <!-- Footer -->
-            <div class="mt-16 text-center text-purple-200">
-                <p class="mb-2">💜 Made with love for Students & Artists</p>
-                <p class="text-sm">Created and developed by Francesco Mariano</p>
-                <p class="text-sm mt-1">2023-2025</p>
-            </div>
-        </div>
-    </div>
+        // Main App Component
+        const FrequencyLabApp = () => {
+            const [currentView, setCurrentView] = useState('home');
+            const [selectedCategory, setSelectedCategory] = useState(null);
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [userAnswers, setUserAnswers] = useState([]);
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [geminiApiKey, setGeminiApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+
+            // Creative Lab states
+            const [creativeProfile, setCreativeProfile] = useState(() => {
+                const saved = localStorage.getItem('creativeProfile_freq');
+                return saved ? JSON.parse(saved) : null;
+            });
+            const [creativeRequest, setCreativeRequest] = useState('');
+            const [creativeAnalyzing, setCreativeAnalyzing] = useState(false);
+            const [creativeLabEntries, setCreativeLabEntries] = useState(() => {
+                const saved = localStorage.getItem('creativeLabEntries_freq');
+                return saved ? JSON.parse(saved) : [];
+            });
+
+            useEffect(() => {
+                localStorage.setItem('gemini_api_key', geminiApiKey);
+            }, [geminiApiKey]);
+
+            useEffect(() => {
+                if (creativeProfile) {
+                    localStorage.setItem('creativeProfile_freq', JSON.stringify(creativeProfile));
+                }
+            }, [creativeProfile]);
+
+            useEffect(() => {
+                localStorage.setItem('creativeLabEntries_freq', JSON.stringify(creativeLabEntries));
+            }, [creativeLabEntries]);
+
+            const startQuiz = (category) => {
+                setSelectedCategory(category);
+                setCurrentQuestion(0);
+                setUserAnswers([]);
+                setShowResults(false);
+                setScore(0);
+                setCurrentView('quiz');
+            };
+
+            const handleAnswer = (answerIndex) => {
+                const currentQ = quizData[selectedCategory][currentQuestion];
+                const isCorrect = answerIndex === currentQ.correct;
+
+                // Show pop-up with result
+                const correctAnswer = currentQ.options[currentQ.correct];
+                const userAnswer = currentQ.options[answerIndex];
+
+                if (isCorrect) {
+                    alert(`✅ CORRETTO!\n\nRisposta: ${userAnswer}`);
+                } else {
+                    alert(`❌ SBAGLIATO!\n\nLa tua risposta: ${userAnswer}\nRisposta corretta: ${correctAnswer}`);
+                }
+
+                const newAnswers = [...userAnswers, answerIndex];
+                setUserAnswers(newAnswers);
+
+                if (currentQuestion < quizData[selectedCategory].length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                } else {
+                    // Calculate score
+                    let correctCount = 0;
+                    quizData[selectedCategory].forEach((q, index) => {
+                        if (newAnswers[index] === q.correct) {
+                            correctCount++;
+                        }
+                    });
+                    setScore(correctCount);
+                    setShowResults(true);
+                }
+            };
+
+            const analyzeCreativeRequestData = async () => {
+                if (!creativeRequest.trim() || !creativeProfile) return;
+
+                setCreativeAnalyzing(true);
+
+                const prompt = `SEI UN MENTORE SPECIALIZZATO IN MUSICA DEL '900, ELETTROACUSTICA E ACUSTICA MUSICALE.
+
+PROFILO UTENTE:
+- Età: ${creativeProfile.age} anni
+- Studia/Interessi: ${creativeProfile.study}
+- Livello: ${creativeProfile.level}
+- Aree di interesse: ${creativeProfile.interests}
+- Obiettivi: ${creativeProfile.goals || 'Non specificati'}
+
+RICHIESTA DELL'UTENTE:
+${creativeRequest}
+
+COMPITO:
+Analizza il profilo e la richiesta, poi proponi esattamente 3 strategie concrete e personalizzate per approfondire la conoscenza della musica del '900, elettroacustica o acustica musicale.
+
+FORMATO RISPOSTA (usa markdown):
+
+## 🎯 Analisi della Tua Richiesta
+[breve sintesi - 2-3 righe]
+
+## 💡 Tre Strategie Personalizzate per Te
+
+### Strategia 1: [Nome evocativo]
+**🎵 Approccio:** [descrizione - 2-3 righe]
+**🛠️ Risorse necessarie:** [cosa serve]
+**✨ Risultato atteso:** [cosa otterrai]
+**⏱️ Tempo/Difficoltà:** [stima]
+
+### Strategia 2: [Nome evocativo]
+**🎵 Approccio:** [descrizione - 2-3 righe]
+**🛠️ Risorse necessarie:** [cosa serve]
+**✨ Risultato atteso:** [cosa otterrai]
+**⏱️ Tempo/Difficoltà:** [stima]
+
+### Strategia 3: [Nome evocativo]
+**🎵 Approccio:** [descrizione - 2-3 righe]
+**🛠️ Risorse necessarie:** [cosa serve]
+**✨ Risultato atteso:** [cosa otterrai]
+**⏱️ Tempo/Difficoltà:** [stima]
+
+## 🚀 Prossimo Passo Consigliato
+[UN'azione concreta - 1-2 righe]
+
+Tono: professionale, didattico, incoraggiante.`;
+
+                try {
+                    const apiKey = geminiApiKey;
+                    if (!apiKey) {
+                        alert('⚠️ Configura la tua API Key nelle impostazioni.');
+                        setCreativeAnalyzing(false);
+                        return;
+                    }
+
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: {
+                                temperature: 0.9,
+                                topK: 40,
+                                topP: 0.95,
+                                maxOutputTokens: 2048,
+                            }
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        alert(`Errore API: ${data.error?.message || 'Risposta non valida'}`);
+                        setCreativeAnalyzing(false);
+                        return;
+                    }
+
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+                        const aiResponse = data.candidates[0].content.parts[0].text;
+                        const newEntry = {
+                            date: new Date().toISOString(),
+                            request: creativeRequest,
+                            response: aiResponse,
+                            profile: { ...creativeProfile }
+                        };
+
+                        const newEntries = [...creativeLabEntries, newEntry];
+                        setCreativeLabEntries(newEntries);
+                        setCreativeRequest('');
+                    } else {
+                        alert('Errore nella risposta AI. Riprova.');
+                    }
+                } catch (error) {
+                    console.error('Errore Creative Lab:', error);
+                    alert('Errore di connessione. Controlla la tua API Key.');
+                }
+
+                setCreativeAnalyzing(false);
+            };
+
+            // HOME VIEW
+            const HomeView = () => (
+                <div className="min-h-screen p-6">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="text-center mb-12 wave-animation">
+                            <h1 className="text-6xl font-bold text-white mb-4">
+                                🎵 Frequency Lab
+                            </h1>
+                            <p className="text-2xl text-purple-100">
+                                Quiz sulla Musica del '900 ed Elettroacustica
+                            </p>
+                        </div>
+
+                        <div className="grid md:grid-cols-3 gap-6 mb-8">
+                            <div
+                                onClick={() => startQuiz('acustica')}
+                                className="card-hover bg-white rounded-2xl p-8 cursor-pointer shadow-xl"
+                            >
+                                <div className="text-center">
+                                    <div className="text-6xl mb-4">🔊</div>
+                                    <h2 className="text-2xl font-bold gradient-text mb-3">Acustica Musicale</h2>
+                                    <p className="text-gray-600 mb-4">100 domande su onde, frequenze, e fenomeni acustici</p>
+                                    <div className="flex justify-center gap-2 text-sm">
+                                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">Base</span>
+                                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Intermedio</span>
+                                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">Avanzato</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                onClick={() => startQuiz('novecento')}
+                                className="card-hover bg-white rounded-2xl p-8 cursor-pointer shadow-xl"
+                            >
+                                <div className="text-center">
+                                    <div className="text-6xl mb-4">🎼</div>
+                                    <h2 className="text-2xl font-bold gradient-text mb-3">Musica del '900</h2>
+                                    <p className="text-gray-600 mb-4">50 domande su compositori, correnti e opere del Novecento</p>
+                                    <div className="flex justify-center gap-2 text-sm">
+                                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">Base</span>
+                                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Intermedio</span>
+                                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">Avanzato</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                onClick={() => startQuiz('curiosita')}
+                                className="card-hover bg-white rounded-2xl p-8 cursor-pointer shadow-xl"
+                            >
+                                <div className="text-center">
+                                    <div className="text-6xl mb-4">💡</div>
+                                    <h2 className="text-2xl font-bold gradient-text mb-3">Curiosità</h2>
+                                    <p className="text-gray-600 mb-4">50 domande su aneddoti, strumenti e storia della musica</p>
+                                    <div className="flex justify-center gap-2 text-sm">
+                                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">Base</span>
+                                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">Intermedio</span>
+                                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">Avanzato</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mb-8">
+                            <div
+                                onClick={() => setCurrentView('sound-explorer')}
+                                className="card-hover bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl p-8 cursor-pointer shadow-xl"
+                            >
+                                <div className="text-center">
+                                    <div className="text-6xl mb-4">🎮</div>
+                                    <h2 className="text-3xl font-bold text-white mb-3">Sound Explorer - Gioco Interattivo</h2>
+                                    <p className="text-white text-lg mb-4">Esplora i parametri del suono in modo interattivo! Muovi il personaggio e scopri 7 stazioni educative</p>
+                                    <div className="flex justify-center gap-2 text-sm flex-wrap">
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">🎼 Frequenza</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">🔊 Ampiezza</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">🎨 Timbro</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">📈 ADSR</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">🌈 Armoniche</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">〰️ Battimenti</span>
+                                        <span className="px-3 py-1 bg-white/20 text-white rounded-full">🎛️ Filtri</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4 justify-center">
+                            <button
+                                onClick={() => setCurrentView('creative-lab')}
+                                className="card-hover bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-xl"
+                            >
+                                🧠 Creative Lab AI
+                            </button>
+                            <button
+                                onClick={() => setCurrentView('settings')}
+                                className="card-hover bg-white text-purple-700 px-8 py-4 rounded-xl font-bold text-lg shadow-xl"
+                            >
+                                ⚙️ Impostazioni
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // QUIZ VIEW
+            const QuizView = () => {
+                if (showResults) {
+                    const percentage = Math.round((score / quizData[selectedCategory].length) * 100);
+                    return (
+                        <div className="min-h-screen p-6">
+                            <div className="max-w-3xl mx-auto bg-white rounded-2xl p-8 shadow-2xl">
+                                <h2 className="text-4xl font-bold gradient-text mb-6 text-center">Risultati Quiz</h2>
+
+                                <div className="text-center mb-8">
+                                    <div className="text-7xl mb-4">
+                                        {percentage >= 90 ? '🏆' : percentage >= 70 ? '🎉' : percentage >= 50 ? '👍' : '📚'}
+                                    </div>
+                                    <div className="text-5xl font-bold text-purple-600 mb-2">{score}/{quizData[selectedCategory].length}</div>
+                                    <div className="text-2xl text-gray-600">{percentage}% Corretto</div>
+                                </div>
+
+                                <div className="space-y-4 mb-8">
+                                    {quizData[selectedCategory].map((q, index) => (
+                                        <div key={index} className={`p-4 rounded-lg ${userAnswers[index] === q.correct ? 'bg-green-50 border-2 border-green-500' : 'bg-red-50 border-2 border-red-500'}`}>
+                                            <div className="flex items-start gap-3">
+                                                <div className="flex-shrink-0 mt-1">
+                                                    {userAnswers[index] === q.correct ? <CheckIcon /> : <XIcon />}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="font-semibold mb-2">{q.question}</p>
+                                                    <p className="text-sm text-gray-600">
+                                                        <span className={userAnswers[index] === q.correct ? 'text-green-700' : 'text-red-700'}>
+                                                            Tua risposta: {q.options[userAnswers[index]]}
+                                                        </span>
+                                                    </p>
+                                                    {userAnswers[index] !== q.correct && (
+                                                        <p className="text-sm text-green-700 mt-1">
+                                                            Risposta corretta: {q.options[q.correct]}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex gap-4 justify-center">
+                                    <button
+                                        onClick={() => startQuiz(selectedCategory)}
+                                        className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold hover:opacity-90"
+                                    >
+                                        🔄 Riprova
+                                    </button>
+                                    <button
+                                        onClick={() => setCurrentView('home')}
+                                        className="px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-bold hover:bg-gray-300"
+                                    >
+                                        🏠 Home
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
+                const question = quizData[selectedCategory][currentQuestion];
+                const progress = ((currentQuestion + 1) / quizData[selectedCategory].length) * 100;
+
+                return (
+                    <div className="min-h-screen p-6">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="bg-white rounded-2xl p-8 shadow-2xl">
+                                <div className="mb-6">
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-sm font-semibold text-gray-600">
+                                            Domanda {currentQuestion + 1} / {quizData[selectedCategory].length}
+                                        </span>
+                                        <span className="text-sm font-semibold text-purple-600">
+                                            {question.level.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div className="progress-bar bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full" style={{ width: `${progress}%` }}></div>
+                                    </div>
+                                </div>
+
+                                <h3 className="text-2xl font-bold text-gray-800 mb-8">{question.question}</h3>
+
+                                <div className="space-y-4 mb-6">
+                                    {question.options.map((option, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleAnswer(index)}
+                                            className="w-full p-4 text-left bg-gray-50 hover:bg-purple-50 border-2 border-gray-200 hover:border-purple-500 rounded-xl transition-all font-semibold"
+                                        >
+                                            <span className="text-purple-600 mr-3">{String.fromCharCode(65 + index)})</span>
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <button
+                                    onClick={() => {
+                                        if (confirm('Vuoi tornare alla Home? Il progresso del quiz verrà perso.')) {
+                                            setCurrentView('home');
+                                        }
+                                    }}
+                                    className="w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-bold hover:bg-gray-300"
+                                >
+                                    🏠 Torna Home
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            // SETTINGS VIEW
+            const SettingsView = () => (
+                <div className="min-h-screen p-6">
+                    <div className="max-w-2xl mx-auto">
+                        <div className="bg-white rounded-2xl p-8 shadow-2xl">
+                            <h2 className="text-4xl font-bold gradient-text mb-6 text-center">⚙️ Impostazioni</h2>
+
+                            <div className="space-y-6">
+                                <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-6 rounded-xl">
+                                    <h3 className="text-xl font-bold text-purple-800 mb-2">Gemini API Key</h3>
+                                    <p className="text-purple-700 text-sm mb-4">
+                                        Necessaria per usare il Creative Lab AI.
+                                        Ottienila su <a href="https://makersuite.google.com/app/apikey" target="_blank" className="underline">Google AI Studio</a>
+                                    </p>
+                                    <input
+                                        type="password"
+                                        value={geminiApiKey}
+                                        onChange={(e) => setGeminiApiKey(e.target.value)}
+                                        placeholder="Inserisci la tua API Key"
+                                        className="w-full p-3 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div className="bg-gray-50 p-6 rounded-xl">
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">Informazioni</h3>
+                                    <p className="text-gray-600 text-sm">
+                                        <strong>Frequency Lab</strong> - Quiz sulla Musica del '900 ed Elettroacustica
+                                    </p>
+                                    <p className="text-gray-600 text-sm mt-2">
+                                        Creato con React 18, Tailwind CSS e Gemini AI
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setCurrentView('home')}
+                                className="mt-6 w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-bold hover:bg-gray-300"
+                            >
+                                🏠 Torna Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // SOUND EXPLORER VIEW
+            const SoundExplorerView = () => (
+                <div className="min-h-screen p-6">
+                    <div className="max-w-7xl mx-auto">
+                        <button
+                            onClick={() => setCurrentView('home')}
+                            className="mb-4 px-6 py-3 bg-white text-purple-700 rounded-xl font-bold hover:bg-gray-100 shadow-lg"
+                        >
+                            ← Torna alla Home
+                        </button>
+                        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden" style={{height: '750px'}}>
+                            <iframe
+                                src="../Sound Explorer/index.html"
+                                style={{width: '100%', height: '100%', border: 'none'}}
+                                title="Sound Explorer Game"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+
+            // RENDER
+            return (
+                <div>
+                    {currentView === 'home' && <HomeView />}
+                    {currentView === 'quiz' && <QuizView />}
+                    {currentView === 'sound-explorer' && <SoundExplorerView />}
+                    {currentView === 'creative-lab' && (
+                        <CreativeLabView
+                            creativeProfile={creativeProfile}
+                            setCreativeProfile={setCreativeProfile}
+                            creativeRequest={creativeRequest}
+                            setCreativeRequest={setCreativeRequest}
+                            analyzeCreativeRequestData={analyzeCreativeRequestData}
+                            creativeAnalyzing={creativeAnalyzing}
+                            creativeLabEntries={creativeLabEntries}
+                            setCurrentView={setCurrentView}
+                        />
+                    )}
+                    {currentView === 'settings' && <SettingsView />}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FrequencyLabApp />, document.getElementById('root'));
+    </script>
 </body>
 </html>
