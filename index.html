@@ -1497,13 +1497,16 @@
                 const x = canvas.width - sliceWidth;
 
                 // Draw each frequency bin as a pixel/rectangle
-                // We want full vertical range, so map frequencies to full height
-                for (let i = 0; i < bufferLength; i++) {
+                // Use only first 30% of bins (focus on 0-6kHz range for better visualization)
+                const maxBin = Math.floor(bufferLength * 0.3);
+
+                for (let i = 0; i < maxBin; i++) {
                     const frequency = (i / bufferLength) * (audioContext.sampleRate / 2);
 
-                    // Map frequency to Y position (inverted: high freq at top)
-                    const y = canvas.height - (i / bufferLength) * canvas.height;
-                    const height = canvas.height / bufferLength + 1;
+                    // Map frequency to Y position with FULL height usage
+                    const normalizedPosition = i / maxBin;
+                    const y = canvas.height - (normalizedPosition * canvas.height);
+                    const height = (canvas.height / maxBin) + 2;
 
                     // Intensity value (0-255)
                     const intensity = dataArray[i];
@@ -1544,9 +1547,10 @@
 
                 // Draw frequency labels
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.font = 'bold 11px Arial';
-                ctx.fillText('High ↑', 5, 12);
-                ctx.fillText('Low ↓', 5, canvas.height - 5);
+                ctx.font = 'bold 12px Arial';
+                const maxFreq = Math.round((maxBin / bufferLength) * (audioContext.sampleRate / 2));
+                ctx.fillText(`${maxFreq} Hz ↑`, 5, 15);
+                ctx.fillText('0 Hz ↓', 5, canvas.height - 5);
                 ctx.fillText('← Time', canvas.width - 60, canvas.height - 5);
             }
 
