@@ -1497,8 +1497,10 @@
                 const x = canvas.width - sliceWidth;
 
                 // Draw each frequency bin as a pixel/rectangle
-                // Use only first 30% of bins (focus on 0-6kHz range for better visualization)
-                const maxBin = Math.floor(bufferLength * 0.3);
+                // Map to 0-2000 Hz range (matching the frequency slider max)
+                const maxFreqDisplay = 2000; // Hz
+                const nyquist = audioContext.sampleRate / 2;
+                const maxBin = Math.floor((maxFreqDisplay / nyquist) * bufferLength);
 
                 for (let i = 0; i < maxBin; i++) {
                     const frequency = (i / bufferLength) * (audioContext.sampleRate / 2);
@@ -1562,6 +1564,65 @@
                 cancelAnimationFrame(spectrogramAnimationId);
                 spectrogramAnimationId = null;
             }
+        }
+
+        function drawRealTimeSpectrogramCustomRange(canvasId, analyser, maxFreqDisplay) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas || !analyser) return;
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+
+            const nyquist = audioContext.sampleRate / 2;
+            const maxBin = Math.floor((maxFreqDisplay / nyquist) * bufferLength);
+
+            function draw() {
+                spectrogramAnimationId = requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.drawImage(canvas, -2, 0);
+
+                const sliceWidth = 2;
+                const x = canvas.width - sliceWidth;
+
+                for (let i = 0; i < maxBin; i++) {
+                    const normalizedPosition = i / maxBin;
+                    const y = canvas.height - (normalizedPosition * canvas.height);
+                    const height = (canvas.height / maxBin) + 2;
+
+                    const intensity = dataArray[i];
+
+                    if (intensity > 5) {
+                        let r, g, b;
+                        if (intensity < 64) {
+                            r = 0; g = 0; b = intensity * 4;
+                        } else if (intensity < 128) {
+                            r = 0; g = (intensity - 64) * 4; b = 255;
+                        } else if (intensity < 192) {
+                            r = (intensity - 128) * 4; g = 255; b = 255 - (intensity - 128) * 4;
+                        } else {
+                            r = 255; g = 255 - (intensity - 192) * 4; b = 0;
+                        }
+                        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                    } else {
+                        ctx.fillStyle = '#0a0a1e';
+                    }
+
+                    ctx.fillRect(x, y - height, sliceWidth, height);
+                }
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = 'bold 12px Arial';
+                ctx.fillText(`${maxFreqDisplay} Hz ↑`, 5, 15);
+                ctx.fillText('0 Hz ↓', 5, canvas.height - 5);
+                ctx.fillText('← Time', canvas.width - 60, canvas.height - 5);
+            }
+
+            draw();
         }
 
         // ========== FREQUENCY STATION ==========
@@ -2230,6 +2291,8 @@
 
                 <canvas class="spectrum-canvas" id="harmonicsSpectrum"></canvas>
 
+                <canvas class="spectrum-canvas" id="harmonicsSpectrogram" style="height: 300px; margin-top: 20px;"></canvas>
+
                 <div class="button-group">
                     <button class="btn btn-primary" onclick="playHarmonics()">▶️ Riproduci</button>
                     <button class="btn btn-primary" onclick="stopHarmonics()">⏹️ Stop</button>
@@ -2266,8 +2329,15 @@
         function playHarmonics() {
             stopHarmonics();
 
+            // Create analyser for spectrogram (5000 Hz range)
+            spectrogramAnalyser = createSpectrogramAnalyser();
+
             const fundamental = parseFloat(document.getElementById('harmFreqSlider').value);
             const count = parseInt(document.getElementById('harmCountSlider').value);
+
+            // Create a gain node to connect all oscillators to analyser
+            const harmonicsGain = audioContext.createGain();
+            harmonicsGain.gain.value = 1.0;
 
             for (let i = 1; i <= count; i++) {
                 const osc = audioContext.createOscillator();
@@ -2277,16 +2347,25 @@
                 gain.gain.value = 1 / i; // Amplitude decreases with harmonic number
 
                 osc.connect(gain);
-                gain.connect(masterGain);
+                gain.connect(harmonicsGain);
                 osc.start();
 
                 harmonicsOscillators.push(osc);
             }
+
+            // Connect to analyser and output
+            harmonicsGain.connect(spectrogramAnalyser);
+            spectrogramAnalyser.connect(masterGain);
+
+            // Start spectrogram with 5000 Hz range
+            drawRealTimeSpectrogramCustomRange('harmonicsSpectrogram', spectrogramAnalyser, 5000);
         }
 
         function stopHarmonics() {
             harmonicsOscillators.forEach(osc => osc.stop());
             harmonicsOscillators = [];
+            stopSpectrogram();
+            spectrogramAnalyser = null;
         }
 
         function drawHarmonicsSpectrum() {
