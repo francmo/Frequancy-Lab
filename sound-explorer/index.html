@@ -35,6 +35,8 @@
             display: block;
             width: 100%;
             height: 100%;
+            object-fit: contain;
+            background: #E8F5E9;
         }
 
         #stationPanel {
@@ -345,9 +347,8 @@
         #mobileControls {
             display: none;
             position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 80px;
+            left: 20px;
             z-index: 50;
         }
 
@@ -355,6 +356,38 @@
             position: relative;
             width: 150px;
             height: 150px;
+        }
+
+        #enterButton {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(102, 126, 234, 0.95);
+            border: 3px solid white;
+            border-radius: 50%;
+            font-size: 32px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            transition: all 0.1s;
+            z-index: 50;
+            color: white;
+            font-weight: bold;
+        }
+
+        #enterButton:active {
+            background: rgba(118, 75, 162, 0.95);
+            transform: scale(0.95);
+        }
+
+        #enterButton.visible {
+            display: flex;
         }
 
         .dpad-button {
@@ -506,6 +539,11 @@
                 <div class="dpad-button dpad-left" data-direction="left">⬅️</div>
                 <div class="dpad-button dpad-right" data-direction="right">➡️</div>
             </div>
+        </div>
+
+        <!-- Enter Button for Mobile -->
+        <div id="enterButton">
+            ✓
         </div>
     </div>
 
@@ -1137,6 +1175,22 @@
             });
         });
 
+        // Enter button for mobile
+        const enterBtn = document.getElementById('enterButton');
+        enterBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (nearStation && !currentStation) {
+                openStation(nearStation);
+            }
+        });
+
+        enterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (nearStation && !currentStation) {
+                openStation(nearStation);
+            }
+        });
+
         // ========== GAME LOOP ==========
         function update() {
             if (!currentStation) {
@@ -1173,6 +1227,8 @@
 
                 // Check station proximity
                 nearStation = null;
+                const enterButton = document.getElementById('enterButton');
+
                 for (let station of stations) {
                     const dist = Math.hypot(
                         player.x + player.width/2 - (station.x + station.width/2),
@@ -1185,6 +1241,13 @@
                         }
                         break;
                     }
+                }
+
+                // Show/hide enter button on mobile
+                if (nearStation && window.innerWidth <= 768) {
+                    enterButton.classList.add('visible');
+                } else {
+                    enterButton.classList.remove('visible');
                 }
             }
         }
